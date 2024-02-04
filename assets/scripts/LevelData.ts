@@ -1,5 +1,5 @@
 export let TotalLevel = 100;
-export let CurrentTotalLevel = 75;
+export let CurrentTotalLevel = 80;
 export let Level = new Array<string>(TotalLevel);
 export let Name = new Array<string>(TotalLevel);
 export let Diff = new Array<number>(TotalLevel);
