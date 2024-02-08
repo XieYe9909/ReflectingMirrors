@@ -4,6 +4,8 @@ const { ccclass } = _decorator;
  
 @ccclass('MapInfo')
 export class MapInfo {
+    public static UIwidth = 1125;
+    public static UIheight = 2436;
     public static xstart1():number {return -541.5;}
     public static ystart1():number {return -264;}
     public static squaresize():number {return 70;}

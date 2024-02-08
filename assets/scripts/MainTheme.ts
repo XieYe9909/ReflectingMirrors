@@ -15,7 +15,59 @@ function Char2Num(str: string): number {
     else return Number(str);
 }
 
-function Char2Color(str: string): boolean[] {
+export function Num2Color(num: Number): boolean[] {
+    switch (num) {
+        case 0: return [false, false, false];
+        case 1: return [false, false, true];
+        case 2: return [false, true, false];
+        case 3: return [false, true, true];
+        case 4: return [true, false, false];
+        case 5: return [true, false, true];
+        case 6: return [true, true, false];
+        case 7: return [true, true, true];
+        default: return null;
+    }
+}
+
+export enum ColorName {
+    black,
+    blue,
+    green,
+    cyan,
+    red,
+    magenta,
+    yellow,
+    white
+}
+
+export enum MirrorName {
+    zhijiao = 1,
+    xiejiao,
+    fenguang,
+    lvguang_r,
+    lvguang_g,
+    lvguang_b,
+    sanleng = 8,
+    bianse,
+    chuansong,
+    liangzi,
+    xuanzhuan_shun =13,
+    xuanzhuan_ni,
+    zese_r,
+    zese_g,
+    zese_b,
+    duoyong
+}
+
+export enum StableName {
+    guangshan = 7,
+    chuansong = 10,
+    xuanzhuan_shun = 13,
+    xuanzhuan_ni = 14,
+    obstacle = 102
+}
+
+export function Char2Color(str: string): boolean[] {
     let color = new Array<boolean>(3);
     let num = Char2Num(str);
     for(let i=2; i>=0; i--) {
@@ -25,7 +77,7 @@ function Char2Color(str: string): boolean[] {
     return color;
 }
 
-function Char2ColorName(str: string): string {
+export function Char2ColorName(str: string): string {
     let num = Char2Num(str);
     switch(num) {
         case 1: return 'blue';
@@ -39,7 +91,7 @@ function Char2ColorName(str: string): string {
     }
 }
 
-function Id2MirrorName(id: number) {
+export function Id2MirrorName(id: number) {
     switch(id) {
         case 1: return 'zhijiao';
         case 2: return 'xiejiao';
