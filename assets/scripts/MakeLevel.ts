@@ -27,6 +27,7 @@ export class MakeLevel extends Component {
     prefab_num = 0;
     active_index = -1;
     mode: Mode = 'none';
+    rotate_form: boolean;
 
     onLoad() {
         ClearMatrix();
