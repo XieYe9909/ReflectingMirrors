@@ -45,19 +45,42 @@ export class Item extends Component {
                 this.node.setRotationFromEuler(0, 0, this.dir * 45);
             }
 
-            if ((this.id > 2 && this.id < 9) || this.id > 14) {
+            if ((this.id > 2 && this.id < 9) || (this.id > 14 && this.id < 100)) {
                 this.node.setSiblingIndex(0);
             }
+
             this.node.setPosition(this.locate[0] * MapInfo.totalsize() + MapInfo.xshift1(), this.locate[1] * MapInfo.totalsize() + MapInfo.yshift1(), 0);
         }
         else {
-            
+            let x = event.getUILocation().x - 562.5;
+            let y = event.getUILocation().y - 1218;
+
+            if (x >= MapInfo.xstart1() && x <= MapInfo.xend1() && y >= MapInfo.ystart1() && y <= MapInfo.yend1()) {
+                let new_x = Math.floor((x - MapInfo.xstart1()) / MapInfo.totalsize());
+                let new_y = Math.floor((y - MapInfo.ystart1()) / MapInfo.totalsize());
+
+                if (matrix1[new_x * 15 + new_y].id == -1) {
+                    matrix1[this.locate[0] * 15 + this.locate[1]].id = -1;
+                    matrix1[new_x * 15 + new_y].id = this.id;
+                    matrix1[new_x * 15 + new_y].mirrordir = this.dir;
+                    this.locate[0] = new_x;
+                    this.locate[1] = new_y;
+                }
+
+                if ((this.id > 2 && this.id < 9) || (this.id > 14 && this.id < 100)) {
+                    this.node.setSiblingIndex(0);
+                }
+
+                this.node.setPosition(this.locate[0] * MapInfo.totalsize() + MapInfo.xshift1(), this.locate[1] * MapInfo.totalsize() + MapInfo.yshift1(), 0);
+            }
+            else {
+                this.node.destroy();
+                matrix1[this.locate[0] * 15 + this.locate[1]].id = -1
+            }
         }
     }
 
     touchMove(event: EventTouch) {
-
+        this.node.setPosition(this.node.getPosition().x + event.getUIDelta().x, this.node.getPosition().y + event.getUIDelta().y, 0);
     }
 }
-
-

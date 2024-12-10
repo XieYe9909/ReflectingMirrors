@@ -96,23 +96,32 @@ export class MakeLevel extends Component {
 
         new_node.setPosition(x * MapInfo.totalsize() + MapInfo.xshift1(), y * MapInfo.totalsize() + MapInfo.yshift1(), 0);
         new_node.getComponent(Prefab).destroy();
-        let item = new_node.addComponent(Item);
-        item.locate = [x, y];
 
+        let item = new_node.addComponent(Item);
         let prefab = pre_node.getComponent(Prefab);
+
+        item.id = prefab.id;
+        item.dir = 0
+        item.locate = [x, y];
         matrix1[x * 15 + y].id = prefab.id;
+        matrix1[x * 15 + y].mirrordir = 0;
+
         switch (prefab.type) {
             case 'light': {
+                item.rotatable = true;
                 break;
             }
             case 'mirror': {
+                item.rotatable = true;
                 break;
             }
             case 'stable': {
+                item.rotatable = false;
                 new_node.setScale(1, 1);
                 break;
             }
             case 'flower': {
+                item.rotatable = false;
                 new_node.setScale(1, 1);
                 break;
             }
