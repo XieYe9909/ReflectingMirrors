@@ -3,6 +3,7 @@ import { _decorator, Node, EventTouch, Component, sys } from 'cc';
 import { MapInfo } from './MapInfo';
 import { matrix1, matrix2 } from './Square';
 import { MainTheme } from './MainTheme';
+import { getIndexByID } from './utils';
 const { ccclass } = _decorator;
 
 export class MirrorState {
@@ -38,13 +39,16 @@ export class Mirror extends Component {
         this.node.on(Node.EventType.TOUCH_START, this.touchStart, this);
     }
 
-    GetMirrorIndex(): number {
-        let mirror_num = this.main_theme.mirror_array.length;
-        for(let i=0; i<mirror_num; i++) {
-            if(!this.node.uuid.localeCompare(this.main_theme.mirror_array[i].uuid)) return i;
-        }
-        return null;
-    }
+    /**
+     * Instead by getIndexByID
+     */
+    // GetMirrorIndex(): number {
+    //     let mirror_num = this.main_theme.mirror_array.length;
+    //     for(let i=0; i<mirror_num; i++) {
+    //         if(!this.node.uuid.localeCompare(this.main_theme.mirror_array[i].uuid)) return i;
+    //     }
+    //     return null;
+    // }
 
     SetMirror(mirror_state:MirrorState) {
         this.dir = mirror_state.dir
@@ -90,7 +94,7 @@ export class Mirror extends Component {
     }
 
     touchEnd (event:EventTouch) {
-        let index = this.GetMirrorIndex();
+        let index = getIndexByID(this.node, this.main_theme.mirror_array);
         if(this.isClick){
             if(this.rotatable){
                 if(this.main_theme.rotate_form) this.dir = (this.dir + 1) % 8;

@@ -785,7 +785,7 @@
       "a": 255
     },
     "_spriteFrame": {
-      "__uuid__": "951249e0-9f16-456d-8b85-a6ca954da16b@f9941",
+      "__uuid__": "20835ba4-6145-4fbc-a58a-051ce700aa3e@f9941",
       "__expectedType__": "cc.SpriteFrame"
     },
     "_type": 1,
@@ -818,7 +818,7 @@
         "__id__": 21
       }
     ],
-    "_interactable": false,
+    "_interactable": true,
     "_transition": 2,
     "_normalColor": {
       "__type__": "cc.Color",
@@ -873,10 +873,12 @@
   },
   {
     "__type__": "cc.ClickEvent",
-    "target": null,
+    "target": {
+      "__id__": 5
+    },
     "component": "",
-    "_componentId": "82c684UKehPdY2ZDtzje3aX",
-    "handler": "Reset",
+    "_componentId": "c7e661nJR1E+qUAE/7VHpvW",
+    "handler": "reset",
     "customEventData": ""
   },
   {
@@ -1086,7 +1088,7 @@
       "a": 255
     },
     "_spriteFrame": {
-      "__uuid__": "951249e0-9f16-456d-8b85-a6ca954da16b@f9941",
+      "__uuid__": "20835ba4-6145-4fbc-a58a-051ce700aa3e@f9941",
       "__expectedType__": "cc.SpriteFrame"
     },
     "_type": 1,
@@ -1119,7 +1121,7 @@
         "__id__": 29
       }
     ],
-    "_interactable": false,
+    "_interactable": true,
     "_transition": 2,
     "_normalColor": {
       "__type__": "cc.Color",
@@ -1174,10 +1176,12 @@
   },
   {
     "__type__": "cc.ClickEvent",
-    "target": null,
+    "target": {
+      "__id__": 5
+    },
     "component": "",
-    "_componentId": "82c684UKehPdY2ZDtzje3aX",
-    "handler": "SelectLevel",
+    "_componentId": "c7e661nJR1E+qUAE/7VHpvW",
+    "handler": "setRotate",
     "customEventData": "LevelSelect"
   },
   {
@@ -1475,10 +1479,12 @@
   },
   {
     "__type__": "cc.ClickEvent",
-    "target": null,
+    "target": {
+      "__id__": 5
+    },
     "component": "",
-    "_componentId": "82c684UKehPdY2ZDtzje3aX",
-    "handler": "SetRotate",
+    "_componentId": "c7e661nJR1E+qUAE/7VHpvW",
+    "handler": "generateCode",
     "customEventData": ""
   },
   {

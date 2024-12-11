@@ -2,13 +2,14 @@ import { _decorator, Component, EventTouch, Node, Sprite } from 'cc';
 import { MakeLevel } from './MakeLevel';
 const { ccclass, property } = _decorator;
 
-type Type = 'light' | 'mirror' | 'stable' | 'flower';
+export type Type = 'light' | 'mirror' | 'stable' | 'flower';
 
 /** 在關卡創作的界面上，物品欄中的所有物品均包含 Prefab 屬性，包括：Light, Mirror, Stable, Flower。 */
 @ccclass('Prefab')
 export class Prefab extends Component {
     id: number = null;
     index: number = 0;
+    color: boolean[] = [false, false, false];
     type: Type = null;
     make_level: MakeLevel = null;
 

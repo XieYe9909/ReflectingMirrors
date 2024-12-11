@@ -1,10 +1,12 @@
-import { _decorator, Component, Node, Sprite, SpriteFrame, Color, resources, EventTouch, instantiate, director } from 'cc';
+import { _decorator, Component, Node, Sprite, SpriteFrame, Color, resources, EventTouch, instantiate, director, Label, Button } from 'cc';
 import { LightPiece } from './LightPiece';
 import { Num2Color, ColorName, MirrorName, StableName } from './MainTheme'
 import { ClearMatrix, matrix1, matrix2, GetColor } from './Square';
 import { MapInfo } from './MapInfo';
 import { Prefab } from './Prefab';
 import { Item } from './Item';
+import { LightSource, LightTravel } from './LightTravel';
+import { Flower } from './Flower';
 const { ccclass, property } = _decorator;
 
 function GenerateLocate(i: number): number[] {
@@ -21,16 +23,27 @@ type Mode = 'add' | 'delete' | 'none';
 
 @ccclass('MakeLevel')
 export class MakeLevel extends Component {
-    LP_array = new Array<Node>();
     prefab_array = new Array<Node>();
     frame_array = new Array<Node>();
+    LP_array = new Array<Node>();
+
+    light_array = new Array<Node>();
+    flower_array = new Array<Node>();
+    mirror_array = new Array<Node>();
+    stable_array = new Array<Node>();
+
     prefab_num = 0;
     active_index = -1;
     mode: Mode = 'none';
-    rotate_form: boolean;
+    rotate_form: boolean = true;
+    fixed_obj_num: number;
+    window: Node = null;
+    moved: boolean = false;
 
     onLoad() {
         ClearMatrix();
+        this.fixed_obj_num = this.node.children.length;
+        this.window = this.node.getChildByName('window');
 
         for (let i = 0; i < 15; i++) {
             for (let j = 0; j < 15; j++) {
@@ -71,12 +84,16 @@ export class MakeLevel extends Component {
     }
 
     start() {
-        let window = this.node.getChildByName('window');
-        window.on(Node.EventType.TOUCH_START, this.touchStart, this);
-        window.on(Node.EventType.TOUCH_MOVE, this.touchMove, this);
+        this.window.on(Node.EventType.TOUCH_START, this.touchStart, this);
     }
 
     touchStart(event: EventTouch) {
+        this.moved = false;
+        this.window.on(Node.EventType.TOUCH_END, this.touchEnd, this);
+        this.window.on(Node.EventType.TOUCH_MOVE, this.touchMove, this);
+    }
+
+    touchEnd(event: EventTouch) {
         if (this.mode != 'add') {
             return;
         }
@@ -87,6 +104,9 @@ export class MakeLevel extends Component {
         y = Math.floor((y - MapInfo.ystart1()) / MapInfo.totalsize());
 
         if (matrix1[x * 15 + y].id != -1) {
+            if (this.moved) {
+                this.run();
+            }
             return;
         }
 
@@ -97,8 +117,8 @@ export class MakeLevel extends Component {
         new_node.setPosition(x * MapInfo.totalsize() + MapInfo.xshift1(), y * MapInfo.totalsize() + MapInfo.yshift1(), 0);
         new_node.getComponent(Prefab).destroy();
 
-        let item = new_node.addComponent(Item);
         let prefab = pre_node.getComponent(Prefab);
+        let item = new_node.addComponent(Item);
 
         item.id = prefab.id;
         item.dir = 0
@@ -108,24 +128,44 @@ export class MakeLevel extends Component {
 
         switch (prefab.type) {
             case 'light': {
+                item.type = 'light';
                 item.rotatable = true;
+                item.color = prefab.color;
+                this.light_array.push(new_node);
                 break;
             }
             case 'mirror': {
-                item.rotatable = true;
+                item.type = 'mirror';
+                item.rotatable = (item.id == 10 || item.id == 13 || item.id == 14) ? false : true;
+                if ((item.id > 2 && item.id < 9) || item.id > 14) {
+                    new_node.setSiblingIndex(this.fixed_obj_num);
+                }
+                this.mirror_array.push(new_node);
                 break;
             }
             case 'stable': {
-                item.rotatable = false;
+                item.type = 'stable';
+                item.rotatable = (item.id == 7) ? true : false;
                 new_node.setScale(1, 1);
+                this.stable_array.push(new_node);
                 break;
             }
             case 'flower': {
+                item.type = 'flower';
                 item.rotatable = false;
-                new_node.setScale(1, 1);
+                item.color = prefab.color;
+                this.flower_array.push(new_node);
+
+                let flower = new_node.addComponent(Flower)
+                flower.locate = [x, y];
+                flower.color = prefab.color;
+                flower.ChangeState();
                 break;
             }
+            default: break;
         }
+
+        this.run();
     }
 
     touchMove(event: EventTouch) {
@@ -145,12 +185,19 @@ export class MakeLevel extends Component {
         let pre_node = this.prefab_array[this.active_index];
         let new_node = instantiate(pre_node);
         this.node.addChild(new_node);
+        this.stable_array.push(new_node);
+        this.moved = true;
 
         new_node.setPosition(x * MapInfo.totalsize() + MapInfo.xshift1(), y * MapInfo.totalsize() + MapInfo.yshift1(), 0);
         new_node.setScale(1, 1);
         new_node.getComponent(Prefab).destroy();
+
         let item = new_node.addComponent(Item);
+        item.id = 102;
+        item.dir = 0;
         item.locate = [x, y];
+        item.type = 'stable';
+        item.rotatable = false;
         matrix1[x * 15 + y].id = 102;
     }
 
@@ -177,6 +224,7 @@ export class MakeLevel extends Component {
             let prefab = light.addComponent(Prefab);
             prefab.id = 101;
             prefab.index = this.prefab_num++;
+            prefab.color = Num2Color(Number(color_str[i]));
             prefab.type = 'light';
         }
     }
@@ -268,6 +316,7 @@ export class MakeLevel extends Component {
             let prefab = flower.addComponent(Prefab);
             prefab.id = 0;
             prefab.index = this.prefab_num++;
+            prefab.color = color;
             prefab.type = 'flower';
         }
     }
@@ -286,8 +335,111 @@ export class MakeLevel extends Component {
         });
     }
 
+    render() {
+        for(let i = 0; i < this.LP_array.length; i++) {
+            let LP = this.LP_array[i].getComponent(LightPiece);
+            let locate = LP.locate;
+            let dir = LP.dir;
+
+            let [r, g, b] = GetColor(locate, dir);
+            let sprite = LP.getComponent(Sprite);
+
+            if (r == false && g == false && b == false) {
+                sprite.color = new Color(0, 0, 0, 0);
+            }
+            else {
+                sprite.color = new Color((r ? 255 : 0), (g ? 255 : 0), (b ? 255 : 0), 255);
+            }
+        }
+    }
+
+    run() {
+        for(let i = 0; i < 15 * 15; i++) {
+            for(let j = 0; j < 8 * 9; j++) {
+                matrix1[i].lightdir[j] = false;
+            }
+        }
+    
+        let LS_array = new Array<LightSource>();
+        for(let i = 0; i < this.light_array.length; i++) {
+            let item = this.light_array[i].getComponent(Item);
+            let LS = new LightSource(item.locate, item.dir, item.color);
+            LS_array.push(LS);
+        }
+
+        LightTravel(LS_array);
+        this.render();
+    
+        for(let i = 0; i < this.flower_array.length; i++) {
+            let flower = this.flower_array[i].getComponent(Flower);
+            flower.ChangeState();
+        }
+        
+        this.success();
+    }
+
     exit() {
         director.loadScene('FirstPage');
+    }
+
+    setRotate() {
+        let label = this.node.getChildByName('Rotate').getChildByName('Label').getComponent(Label);
+        if(this.rotate_form) {
+            this.rotate_form = false;
+            label.string = '顺时针';
+        }
+        else {
+            this.rotate_form = true;
+            label.string = '逆时针';
+        }
+    }
+
+    reset() {
+        ClearMatrix();
+        this.render();
+
+        while (this.light_array.length > 0) {
+            let node = this.light_array.pop();
+            node.destroy();
+        }
+
+        while (this.flower_array.length > 0) {
+            let node = this.flower_array.pop();
+            node.destroy();
+        }
+
+        while (this.mirror_array.length > 0) {
+            let node = this.mirror_array.pop();
+            node.destroy();
+        }
+
+        while (this.stable_array.length > 0) {
+            let node = this.stable_array.pop();
+            node.destroy();
+        }
+
+        let save_button = this.node.getChildByName('Save').getComponent(Button);
+        save_button.interactable = false;
+    }
+
+    success() {
+        let success = true;
+        if (this.flower_array.length == 0) {
+            success = false;
+        }
+        else{
+            for(let i = 0; i < this.flower_array.length; i++) {
+                let flower = this.flower_array[i].getComponent(Flower);
+                success &&= flower.state;
+            }
+        }
+
+        let save_button = this.node.getChildByName('Save').getComponent(Button);
+        save_button.interactable = success ? true : false;
+    }
+
+    generateCode() {
+        console.log('hhh');
     }
 
     update(deltaTime: number) {

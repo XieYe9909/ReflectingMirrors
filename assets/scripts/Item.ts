@@ -1,17 +1,21 @@
 import { _decorator, Component, EventTouch, Node } from 'cc';
 import { MakeLevel } from './MakeLevel';
+import { Type } from './Prefab';
 import { matrix1 } from './Square';
 import { MapInfo } from './MapInfo';
+import { getIndexByID } from './utils';
 const { ccclass, property } = _decorator;
 
 @ccclass('Item')
 export class Item extends Component {
     id: number;
     dir: number;
-    rotatable :boolean;
-    isClick: boolean = false;
     locate: number[];
+    color: boolean[] = [false, false, false];
+    rotatable :boolean;
     make_level: MakeLevel = null;
+    type: Type = null;
+    isClick: boolean = false;
 
     onLoad() {
         this.make_level = this.node.parent.getComponent(MakeLevel);
@@ -23,8 +27,7 @@ export class Item extends Component {
 
     touchStart() {
         if (this.make_level.mode == 'delete') {
-            this.node.destroy();
-            matrix1[this.locate[0] * 15 + this.locate[1]].id = -1
+            this.delete();
         }
         else {
             this.isClick = true;
@@ -43,10 +46,11 @@ export class Item extends Component {
                 this.dir = this.make_level.rotate_form ? ((this.dir + 1) % 8) : ((this.dir + 7) % 8)
                 matrix1[this.locate[0] * 15 + this.locate[1]].mirrordir = this.dir;
                 this.node.setRotationFromEuler(0, 0, this.dir * 45);
+                this.make_level.run();
             }
 
             if ((this.id > 2 && this.id < 9) || (this.id > 14 && this.id < 100)) {
-                this.node.setSiblingIndex(0);
+                this.node.setSiblingIndex(this.make_level.fixed_obj_num);  // After the "window" layer.
             }
 
             this.node.setPosition(this.locate[0] * MapInfo.totalsize() + MapInfo.xshift1(), this.locate[1] * MapInfo.totalsize() + MapInfo.yshift1(), 0);
@@ -65,22 +69,58 @@ export class Item extends Component {
                     matrix1[new_x * 15 + new_y].mirrordir = this.dir;
                     this.locate[0] = new_x;
                     this.locate[1] = new_y;
+                    this.make_level.run();
                 }
 
                 if ((this.id > 2 && this.id < 9) || (this.id > 14 && this.id < 100)) {
-                    this.node.setSiblingIndex(0);
+                    this.node.setSiblingIndex(this.make_level.fixed_obj_num);  // After the "window" layer.
                 }
 
                 this.node.setPosition(this.locate[0] * MapInfo.totalsize() + MapInfo.xshift1(), this.locate[1] * MapInfo.totalsize() + MapInfo.yshift1(), 0);
             }
             else {
-                this.node.destroy();
-                matrix1[this.locate[0] * 15 + this.locate[1]].id = -1
+                this.delete();
             }
         }
     }
 
     touchMove(event: EventTouch) {
         this.node.setPosition(this.node.getPosition().x + event.getUIDelta().x, this.node.getPosition().y + event.getUIDelta().y, 0);
+    }
+
+    delete() {
+        switch (this.type) {
+            case 'light': {
+                let index = getIndexByID(this.node, this.make_level.light_array);
+                this.make_level.light_array.splice(index, 1);
+                break;
+            }
+            case 'flower': {
+                let index = getIndexByID(this.node, this.make_level.flower_array);
+                this.make_level.flower_array.splice(index, 1);
+                break;
+            }
+            case 'mirror': {
+                let index = getIndexByID(this.node, this.make_level.mirror_array);
+                this.make_level.mirror_array.splice(index, 1);
+                break;
+            }
+            case 'stable': {
+                let index = getIndexByID(this.node, this.make_level.stable_array);
+                this.make_level.stable_array.splice(index, 1);
+                break;
+            }
+            default: break;
+        }
+
+        this.node.destroy();
+        matrix1[this.locate[0] * 15 + this.locate[1]].id = -1
+
+        if (this.type == 'flower') {
+            this.make_level.success();
+        }
+        else {
+            this.make_level.run();
+        }
     }
 }
