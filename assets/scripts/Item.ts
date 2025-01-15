@@ -1,5 +1,6 @@
 import { _decorator, Component, EventTouch, Node } from 'cc';
 import { MakeLevel } from './MakeLevel';
+import { Flower } from './Flower';
 import { Type } from './Prefab';
 import { matrix1 } from './Square';
 import { MapInfo } from './MapInfo';
@@ -69,6 +70,13 @@ export class Item extends Component {
                     matrix1[new_x * 15 + new_y].mirrordir = this.dir;
                     this.locate[0] = new_x;
                     this.locate[1] = new_y;
+                    
+                    if (this.type == 'flower') {
+                        let flower = this.node.getComponent(Flower);
+                        flower.locate[0] = new_x;
+                        flower.locate[1] = new_y;
+                    }
+
                     this.make_level.run();
                 }
 
@@ -92,22 +100,30 @@ export class Item extends Component {
         switch (this.type) {
             case 'light': {
                 let index = getIndexByID(this.node, this.make_level.light_array);
-                this.make_level.light_array.splice(index, 1);
+                if (index !== -1) {
+                    this.make_level.light_array.splice(index, 1);
+                }
                 break;
             }
             case 'flower': {
                 let index = getIndexByID(this.node, this.make_level.flower_array);
-                this.make_level.flower_array.splice(index, 1);
+                if (index !== -1) {
+                    this.make_level.flower_array.splice(index, 1);
+                }
                 break;
             }
             case 'mirror': {
                 let index = getIndexByID(this.node, this.make_level.mirror_array);
-                this.make_level.mirror_array.splice(index, 1);
+                if (index !== -1) {
+                    this.make_level.mirror_array.splice(index, 1);
+                }
                 break;
             }
             case 'stable': {
                 let index = getIndexByID(this.node, this.make_level.stable_array);
-                this.make_level.stable_array.splice(index, 1);
+                if (index !== -1) {
+                    this.make_level.stable_array.splice(index, 1);
+                }
                 break;
             }
             default: break;
