@@ -16,7 +16,7 @@ function Char2Num(str: string): number {
 }
 
 export function Num2Color(num: Number): boolean[] {
-    switch (num) {
+    switch(num) {
         case 0: return [false, false, false];
         case 1: return [false, false, true];
         case 2: return [false, true, false];
@@ -80,6 +80,23 @@ export function Char2Color(str: string): boolean[] {
 export function Char2ColorName(str: string): string {
     let num = Char2Num(str);
     switch(num) {
+        case 1: return 'blue';
+        case 2: return 'green';
+        case 3: return 'cyan';
+        case 4: return 'red';
+        case 5: return 'magenta';
+        case 6: return 'yellow';
+        case 7: return 'white';
+        default: return null;
+    }
+}
+
+export function Color2Name(color: boolean[]): string {
+    let idx = 0;
+    if (color[0]) idx += 4;
+    if (color[1]) idx += 2;
+    if (color[2]) idx += 1;
+    switch(idx) {
         case 1: return 'blue';
         case 2: return 'green';
         case 3: return 'cyan';
@@ -196,70 +213,58 @@ export class MainTheme extends Component {
         this.Success();
     }
 
-    SetLight(light_str: string) {
-        let light_num = light_str.length / 4;
-        for(let i=0; i<light_num; i++) {
-            let str = light_str.slice(4*i, 4*(i + 1));
-            let locate = [Char2Num(str[0]), Char2Num(str[1])];
-            let dir = Char2Num(str[2]);
-            let color = Char2Color(str[3]);
-            let color_name = Char2ColorName(str[3]);
+    SetLight(locate: number[], color: boolean[], dir: number) {
+        let color_name = Color2Name(color);
 
-            let node = new Node('light');
-            this.node.addChild(node);
+        let node = new Node('light');
+        this.node.addChild(node);
 
-            node.layer = 33554432;
-            node.setPosition(locate[0]*MapInfo.totalsize() + MapInfo.xshift1(), locate[1]*MapInfo.totalsize() + MapInfo.yshift1(), 0);
-            node.setRotationFromEuler(0, 0, dir * 45);
-            matrix1[locate[0]*15 + locate[1]].id = 101;
+        node.layer = 33554432;
+        node.setPosition(locate[0]*MapInfo.totalsize() + MapInfo.xshift1(), locate[1]*MapInfo.totalsize() + MapInfo.yshift1(), 0);
+        node.setRotationFromEuler(0, 0, dir * 45);
+        matrix1[locate[0]*15 + locate[1]].id = 101;
 
-            let sprite = node.addComponent(Sprite);
-            let path = 'lights/' + color_name + '/spriteFrame';
-            resources.load(path, SpriteFrame, (_err: any, spriteFrame: SpriteFrame) => {
-                sprite.spriteFrame = spriteFrame;
-            });
+        let sprite = node.addComponent(Sprite);
+        let path = 'lights/' + color_name + '/spriteFrame';
+        resources.load(path, SpriteFrame, (_err: any, spriteFrame: SpriteFrame) => {
+            sprite.spriteFrame = spriteFrame;
+        });
 
-            let LS = new LightSource(locate, dir, color);
-            this.LS_array.push(LS);
-            this.obj_array.push(node);
-        }
+        let LS = new LightSource(locate, dir, color);
+        this.LS_array.push(LS);
+        this.obj_array.push(node);
     }
 
-    SetFlower(flower_str: string) {
-        let flower_num = flower_str.length / 3;
-        for(let i=0; i<flower_num; i++) {
-            let str = flower_str.slice(3*i, 3*(i + 1));
-            let locate = [Char2Num(str[0]), Char2Num(str[1])];
-            let color = Char2Color(str[2]);
+    SetFlower(locate: number[], color: boolean[]) {
+        let node = new Node('flower');
+        this.node.addChild(node);
 
-            let node = new Node('flower');
-            this.node.addChild(node);
+        node.layer = 33554432;
+        node.setSiblingIndex(0);
+        node.setPosition(locate[0]*MapInfo.totalsize() + MapInfo.xshift1(), locate[1]*MapInfo.totalsize() + MapInfo.yshift1(), 0);
+        matrix1[locate[0]*15 + locate[1]].id = 0;
 
-            node.layer = 33554432;
-            node.setSiblingIndex(0);
-            node.setPosition(locate[0]*MapInfo.totalsize() + MapInfo.xshift1(), locate[1]*MapInfo.totalsize() + MapInfo.yshift1(), 0);
-            matrix1[locate[0]*15 + locate[1]].id = 0;
+        let sprite = node.addComponent(Sprite);
+        resources.load('flower/spriteFrame', SpriteFrame, (_err: any, spriteFrame: SpriteFrame) => {
+            sprite.spriteFrame = spriteFrame;
+        });
 
-            let sprite = node.addComponent(Sprite);
-            resources.load('flower/spriteFrame', SpriteFrame, (_err: any, spriteFrame: SpriteFrame) => {
-                sprite.spriteFrame = spriteFrame;
-            });
+        let flower = node.addComponent(Flower);
+        flower.locate[0] = locate[0];
+        flower.locate[1] = locate[1];
+        flower.color[0] = color[0];
+        flower.color[1] = color[1];
+        flower.color[2] = color[2];
+        flower.ChangeState();
 
-            let flower = node.addComponent(Flower);
-            flower.locate = locate;
-            flower.color = color;
-            flower.ChangeState();
-
-            this.flower_array.push(node);
-        }
+        this.flower_array.push(node);
     }
 
-    SetMirror(mirror_str: string) {
-        let type_num = mirror_str.length / 2;
+    SetMirror(id_arr: number[], num_arr: number[]) {
+        let type_num = id_arr.length;
         for(let i=0; i<type_num; i++) {
-            let str = mirror_str.slice(2*i, 2*(i + 1));
-            let id = Char2Num(str[0]);
-            let num = Char2Num(str[1]);
+            let id = id_arr[i];
+            let num = num_arr[i];
             for(let k=0; k<num; k++) {
                 let node = new Node('mirror');
                 this.node.addChild(node);
@@ -315,78 +320,171 @@ export class MainTheme extends Component {
         }
     }
 
-    SetGuangshan(guangshan_str: string) {
-        let guangshan_num = guangshan_str.length / 3;
-        for(let i=0; i<guangshan_num; i++) {
-            let str = guangshan_str.slice(3*i, 3*(i + 1));
-            let locate = [Char2Num(str[0]), Char2Num(str[1])];
-            let dir = Char2Num(str[2]);
+    SetGuangshan(locate: number[], dir: number) {
+        let node = new Node('guangshan');
+        this.node.addChild(node);
 
-            let node = new Node('guangshan');
-            this.node.addChild(node);
+        node.layer = 33554432;
+        node.setSiblingIndex(0);
+        node.setPosition(locate[0]*MapInfo.totalsize() + MapInfo.xshift1(), locate[1]*MapInfo.totalsize() + MapInfo.yshift1(), 0);
+        node.setRotationFromEuler(0, 0, dir*45);
+        matrix1[locate[0]*15 + locate[1]].id = 7;
+        matrix1[locate[0]*15 + locate[1]].mirrordir = dir;
 
-            node.layer = 33554432;
-            node.setSiblingIndex(0);
-            node.setPosition(locate[0]*MapInfo.totalsize() + MapInfo.xshift1(), locate[1]*MapInfo.totalsize() + MapInfo.yshift1(), 0);
-            node.setRotationFromEuler(0, 0, dir*45);
-            matrix1[locate[0]*15 + locate[1]].id = 7;
-            matrix1[locate[0]*15 + locate[1]].mirrordir = dir;
+        let sprite = node.addComponent(Sprite);
+        resources.load('stables/guangshan/spriteFrame', SpriteFrame, (_err: any, spriteFrame: SpriteFrame) => {
+            sprite.spriteFrame = spriteFrame;
+        });
 
-            let sprite = node.addComponent(Sprite);
-            resources.load('stables/guangshan/spriteFrame', SpriteFrame, (_err: any, spriteFrame: SpriteFrame) => {
-                sprite.spriteFrame = spriteFrame;
-            });
-
-            this.obj_array.push(node);
-        }
+        this.obj_array.push(node);
     }
 
-    SetStable(stable_str: string) {
-        let stable_num = stable_str.length / 3;
-        for(let i=0; i<stable_num; i++) {
-            let str = stable_str.slice(3*i, 3*(i + 1));
-            let locate = [Char2Num(str[0]), Char2Num(str[1])];
-            let type = str[2];
+    SetStable(locate: number[], id: number) {
+        let node = new Node('stable');
+        this.node.addChild(node);
+        node.layer = 33554432;
+        node.setPosition(locate[0]*MapInfo.totalsize() + MapInfo.xshift1(), locate[1]*MapInfo.totalsize() + MapInfo.yshift1(), 0);
+        let sprite = node.addComponent(Sprite);
 
-            let node = new Node('stable');
-            this.node.addChild(node);
-            node.layer = 33554432;
-            node.setPosition(locate[0]*MapInfo.totalsize() + MapInfo.xshift1(), locate[1]*MapInfo.totalsize() + MapInfo.yshift1(), 0);
-            let sprite = node.addComponent(Sprite);
+        switch(id) {
+            case 1 : {
+                matrix1[locate[0]*15 + locate[1]].id = 10;
+                resources.load('stables/chuansong/spriteFrame', SpriteFrame, (_err: any, spriteFrame: SpriteFrame) => {
+                    sprite.spriteFrame = spriteFrame;
+                });
+                break;
+            }
+            case 2 : {
+                matrix1[locate[0]*15 + locate[1]].id = 13;
+                resources.load('stables/xuanzhuan_shun/spriteFrame', SpriteFrame, (_err: any, spriteFrame: SpriteFrame) => {
+                    sprite.spriteFrame = spriteFrame;
+                });
+                break;
+            }
+            case 3 : {
+                matrix1[locate[0]*15 + locate[1]].id = 14;
+                resources.load('stables/xuanzhuan_ni/spriteFrame', SpriteFrame, (_err: any, spriteFrame: SpriteFrame) => {
+                    sprite.spriteFrame = spriteFrame;
+                });
+                break;
+            }
+            case 4 : {
+                matrix1[locate[0]*15 + locate[1]].id = 102;
+                resources.load('stables/obstacle/spriteFrame', SpriteFrame, (_err: any, spriteFrame: SpriteFrame) => {
+                    sprite.spriteFrame = spriteFrame;
+                });
+                break;
+            }
+            default: break;
+        }
 
-            switch(type) {
-                case '1': {
-                    matrix1[locate[0]*15 + locate[1]].id = 102;
-                    resources.load('stables/obstacle/spriteFrame', SpriteFrame, (_err: any, spriteFrame: SpriteFrame) => {
-                        sprite.spriteFrame = spriteFrame;
-                    });
-                    break;
-                }
-                case '2': {
-                    matrix1[locate[0]*15 + locate[1]].id = 10;
-                    resources.load('stables/chuansong/spriteFrame', SpriteFrame, (_err: any, spriteFrame: SpriteFrame) => {
-                        sprite.spriteFrame = spriteFrame;
-                    });
-                    break;
-                }
-                case '3': {
-                    matrix1[locate[0]*15 + locate[1]].id = 13;
-                    resources.load('stables/xuanzhuan_shun/spriteFrame', SpriteFrame, (_err: any, spriteFrame: SpriteFrame) => {
-                        sprite.spriteFrame = spriteFrame;
-                    });
-                    break;
-                }
-                case '4': {
-                    matrix1[locate[0]*15 + locate[1]].id = 14;
-                    resources.load('stables/xuanzhuan_ni/spriteFrame', SpriteFrame, (_err: any, spriteFrame: SpriteFrame) => {
-                        sprite.spriteFrame = spriteFrame;
-                    });
-                    break;
-                }
-                default: break;
+        this.obj_array.push(node);
+    }
+
+    DecodeLevelStr(str: string) {
+        enum DecodeMode {
+            lightsource,
+            flower,
+            mirror,
+            guangshan,
+            stable,
+        }
+        var Char2NumX = function(i: number) {
+            if(i <= 57) return i - 48;
+            else return i - 87;
+        };
+        var Char2NumY = function(i: number) {
+            return i - 102;
+        };
+        let mode : DecodeMode = DecodeMode.lightsource;
+        let color : boolean[] = [false, false, false];
+        let locate : number[] = [0, 0];
+        let dir : number = 0;
+        let id : number = 0;
+        for (let i=0; i<str.length; ) {
+            if (str.charCodeAt(i) >= 65 && str.charCodeAt(i) <= 86) {
+                if (str.charCodeAt(i) >= 65 && str.charCodeAt(i) <= 72) { // A-H
+                    mode = DecodeMode.lightsource;
+                    color[0] = (((str.charCodeAt(i) - 65) & 4) != 0) ? true : false;
+                    color[1] = (((str.charCodeAt(i) - 65) & 2) != 0) ? true : false;
+                    color[2] = (((str.charCodeAt(i) - 65) & 1) != 0) ? true : false;
+                } else if (str.charCodeAt(i) >= 73 && str.charCodeAt(i) <= 80) { // I-P
+                    mode = DecodeMode.flower;
+                    color[0] = (((str.charCodeAt(i) - 73) & 4) != 0) ? true : false;
+                    color[1] = (((str.charCodeAt(i) - 73) & 2) != 0) ? true : false;
+                    color[2] = (((str.charCodeAt(i) - 73) & 1) != 0) ? true : false;
+                } else if (str.charCodeAt(i) == 81) { // Q
+                    mode = DecodeMode.mirror;
+                } else if (str.charCodeAt(i) == 82) { // R
+                    mode = DecodeMode.guangshan;
+                } else if (str.charCodeAt(i) >= 83 && str.charCodeAt(i) <= 86) { // T-V
+                    mode = DecodeMode.stable;
+                    id = str.charCodeAt(i)- 82;
+                } 
+                i++;
+                continue;
             }
 
-            this.obj_array.push(node);
+            if (mode == DecodeMode.mirror) {
+                let id_arr : number[] = new Array(20);
+                let num_arr : number[] = new Array(20);
+                let index = 0;
+                while (i<str.length && !(str.charCodeAt(i) >= 65 && str.charCodeAt(i) <= 86)) {
+                    id_arr[index] = Char2NumX(str.charCodeAt(i)); 
+                    num_arr[index] = Char2NumX(str.charCodeAt(i+1)); 
+                    index++;
+                    i = i + 2;
+                }
+                this.SetMirror(id_arr, num_arr);
+            } 
+            else if (mode == DecodeMode.lightsource || mode == DecodeMode.guangshan) {
+                while (i<str.length && !(str.charCodeAt(i) >= 65 && str.charCodeAt(i) <= 86)) {
+                    locate[0] = Char2NumX(str.charCodeAt(i));
+                    i++;
+                    while (i<str.length && str.charCodeAt(i) >= 102 && str.charCodeAt(i) <= 116) {
+                        locate[1] = Char2NumY(str.charCodeAt(i));
+                        dir = Char2NumX(str.charCodeAt(i+1));
+                        if (mode == DecodeMode.lightsource) {
+                            this.SetLight(locate, color, dir);
+
+                        } else {
+                            this.SetGuangshan(locate, dir);
+                        }
+                        i = i + 2;
+                    }
+                }
+            }
+            else if (mode == DecodeMode.flower || mode == DecodeMode.stable) {
+                while (i<str.length && !(str.charCodeAt(i)>= 65 && str.charCodeAt(i)<= 86)) {
+                    locate[0] = Char2NumX(str.charCodeAt(i));
+                    i++;
+                    locate[1] = Char2NumY(str.charCodeAt(i));
+                    let start_y : number = locate[1];
+                    while (i<str.length && ((str.charCodeAt(i)>= 102 && str.charCodeAt(i)<= 116) || str.charCodeAt(i) == 45)) {
+                        if (str.charCodeAt(i) >= 102 && str.charCodeAt(i) <= 116) {
+                            locate[1] = Char2NumY(str.charCodeAt(i));
+                            start_y = locate[1];
+                            if (mode == DecodeMode.flower) {
+                                this.SetFlower(locate, color);
+                            } else if (mode == DecodeMode.stable) {
+                                this.SetStable(locate, id);
+                            }
+                            i++;
+                        }
+                        else if (str.charCodeAt(i) == 45) { // '-'
+                            let end_y = Char2NumY(str.charCodeAt(i + 1));
+                            for (locate[1] = start_y + 1; locate[1] <= end_y; locate[1]++) {
+                                if (mode == DecodeMode.flower) {
+                                    this.SetFlower(locate, color);
+                                } else if (mode == DecodeMode.stable) {
+                                    this.SetStable(locate, id);
+                                }
+                            }
+                            i = i + 2;
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -419,46 +517,7 @@ export class MainTheme extends Component {
 
         let level_str = Level[this.level_index];
         if(level_str == null || level_str.length == 0) return false;
-
-        let LFMGS = [-1, -1, -1, -1, -1];
-        for(let i=0; i<level_str.length; i++) {
-            switch(level_str[i]) {
-                case 'L': LFMGS[0] = i; break;
-                case 'F': LFMGS[1] = i; break;
-                case 'M': LFMGS[2] = i; break;
-                case 'G': LFMGS[3] = i; break;
-                case 'S': LFMGS[4] = i; break;
-                default: break;
-            }
-        }
-        if(LFMGS[0]<0 || LFMGS[1]<0 || LFMGS[2]<0) return false;
-
-        let light_str = level_str.slice(LFMGS[0] + 1, LFMGS[1]);
-        let flower_str = level_str.slice(LFMGS[1] + 1, LFMGS[2]);
-        let mirror_str: string = null;
-        let guangshan_str: string = null;
-        let stable_str:string = null;
-        if(LFMGS[3] >= 0) {
-            mirror_str = level_str.slice(LFMGS[2] + 1, LFMGS[3]);
-            if(LFMGS[4] >= 0) {
-                guangshan_str = level_str.slice(LFMGS[3] + 1, LFMGS[4]);
-                stable_str = level_str.slice(LFMGS[4] + 1, level_str.length);
-            }
-            else guangshan_str = level_str.slice(LFMGS[3] + 1, level_str.length);
-        }
-        else {
-            if(LFMGS[4] >= 0) {
-                mirror_str = level_str.slice(LFMGS[2] + 1, LFMGS[4]);
-                stable_str = level_str.slice(LFMGS[4] + 1, level_str.length);
-            }
-            else mirror_str = level_str.slice(LFMGS[2] + 1, level_str.length);
-        }
-
-        this.SetLight(light_str);
-        this.SetFlower(flower_str);
-        if(guangshan_str != null) this.SetGuangshan(guangshan_str);
-        if(stable_str != null) this.SetStable(stable_str);
-        this.SetMirror(mirror_str);
+        this.DecodeLevelStr(level_str);
         return true;
     }
 

@@ -439,7 +439,194 @@ export class MakeLevel extends Component {
     }
 
     generateCode() {
-        console.log('hhh');
+        // prepare
+        var Num2CharT = function(i: number) {
+            return String.fromCharCode(i + 65);
+        };
+        var Num2CharX = function(i: number): string {
+            if(i < 10) return String(i);
+            else return String.fromCharCode(i + 87);
+        };
+        var Num2CharY = function(i: number): string {
+            return String.fromCharCode(i + 102);
+        };
+        var Color2Num = function(color: boolean[]): number {
+            let a = color[0] ? 1 : 0;
+            let b = color[1] ? 1 : 0;
+            let c = color[2] ? 1 : 0;
+            let num = a*4 + b*2 + c;
+            return num;
+        };
+        var StableID2Num = function(i : number): number {
+            switch(i) {
+                case 7 : return 1;
+                case 10 : return 2;
+                case 13 : return 3;
+                case 14 : return 4;
+                case 102 : return 5;
+                default : return -1;
+            }
+        };
+        var CmpItem = function(a:Item, b:Item) {
+            // assert a.type == b.type
+            let a_color = Color2Num(a.color), b_color = Color2Num(b.color);
+            if (a_color != b_color) {
+                return a_color - b_color;
+            }
+            else if (a.locate[0] == -1) {
+                return 0;
+            }
+            else if (a.id != b.id) {
+                return a.id - b.id;
+            }
+            else if (a.locate[0] != b.locate[0]) {
+                return a.locate[0] - b.locate[0];
+            }
+            else {
+                return a.locate[1] - b.locate[1];
+            }
+        }
+
+        let code = '';
+        let curr_type = 0;
+        let curr_id = -1;
+        let curr_row = -1;
+        
+        // process light source
+        let light_list = new Array<Item>();
+        for (let ls of this.light_array) {
+            light_list.push(ls.getComponent(Item));
+        }
+        light_list.sort(CmpItem);
+        for(let item of light_list) {
+            let type = Color2Num(item.color);
+            if (type != curr_type) {
+                code += Num2CharT(type);
+                curr_type = type;
+                curr_row = -1;
+            }
+            if (curr_row != item.locate[0]) {
+                code += Num2CharX(item.locate[0]);
+                curr_row = item.locate[0];
+            }
+            code += Num2CharY(item.locate[1]);
+            code += Num2CharX(item.dir);
+        }
+
+        // process flower
+        let flower_list = new Array<Item>();
+        for (let ls of this.flower_array) {
+            flower_list.push(ls.getComponent(Item));
+        }
+        flower_list.sort(CmpItem);
+        for(let item of flower_list) {
+            let type = Color2Num(item.color) + 8;
+            if (type != curr_type) {
+                code += Num2CharT(type);
+                curr_type = type;
+                curr_row = -1;
+            }
+            if (curr_row != item.locate[0]) {
+                code += Num2CharX(item.locate[0]);
+                curr_row = item.locate[0];
+            }
+            code += Num2CharY(item.locate[1]);
+        }
+
+        // process mirror
+        let mirror_list = new Array<Item>();
+        for (let ls of this.mirror_array) {
+            mirror_list.push(ls.getComponent(Item));
+        }
+        let mirror_num = new Array<number>(17);
+        for(let i=0; i<17; i++) mirror_num[i] = 0;
+        mirror_list.sort(CmpItem);
+        for(let item of mirror_list) {
+            let type = 16;
+            if (type != curr_type) {
+                code += Num2CharT(type);
+                curr_type = type;
+            }
+            mirror_num[item.id] += 1;
+        }
+        for(let i=0; i<17; i++) {
+            if (mirror_num[i] > 0) {
+                code += Num2CharX(i);
+                code += Num2CharX(mirror_num[i]);
+            }
+        }
+
+        // process stable
+        let stable_list = new Array<Item>();
+        for (let ls of this.stable_array) {
+            stable_list.push(ls.getComponent(Item));
+        }
+        stable_list.sort(CmpItem);
+        for(let item of stable_list) {
+            let type = StableID2Num(item.id) + 16;
+            if (type != curr_type) {
+                code += Num2CharT(type);
+                curr_type = type;
+                curr_row = -1;
+            }
+            if (curr_row != item.locate[0]) {
+                code += Num2CharX(item.locate[0]);
+                curr_row = item.locate[0];
+            }
+            code += Num2CharY(item.locate[1]);
+            if (item.rotatable) code += Num2CharX(item.dir);
+        }
+
+        // compress code
+        var PrintContinuousChar = function(start:number, end:number) {
+            let result = "";
+            if (end - start >= 2) {
+                result += String.fromCharCode(start);
+                result = result.concat("-");
+                result += String.fromCharCode(end);
+            }
+            else if (end != start){
+                result += String.fromCharCode(start);
+                result += String.fromCharCode(end);
+            }
+            else {
+                result += String.fromCharCode(start);
+            }
+            return result;
+        };
+        let compressed_code = "";
+        let need_print = false;
+        let last_ch = 0;
+        let first_ch = 0;
+        for (let i=0; i<code.length; i++) {
+            let ch = code.charCodeAt(i);
+            if (ch < 102 || ch > 116) {
+                if (need_print) {
+                    compressed_code += PrintContinuousChar(first_ch, last_ch);
+                    need_print = false;
+                }
+                last_ch = 0;
+                compressed_code += code[i];
+                continue;
+            }
+            if (ch - last_ch != 1) {
+                if (need_print) {
+                    compressed_code += PrintContinuousChar(first_ch, last_ch);
+                }
+                first_ch = ch;
+                last_ch = ch;
+            }
+            else {
+                last_ch = ch;
+            }
+            need_print = true;
+        }
+        if (need_print) {
+            compressed_code += PrintContinuousChar(first_ch, last_ch);
+        }
+
+        // return 
+        console.log(compressed_code);
     }
 
     update(deltaTime: number) {

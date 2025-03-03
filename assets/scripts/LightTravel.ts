@@ -2,14 +2,17 @@
 import { matrix1, GetInColor, AddColor, AddQuantumColor } from "./Square";
 
 export class LightSource {
-    locate:number[];
+    locate:number[] = new Array(2);
     dir:number;
-    color:boolean[];
+    color:boolean[] = new Array(3);
 
     constructor(locate: number[], dir: number, color:boolean[]){
-        this.locate = locate;
+        this.locate[0] = locate[0];
+        this.locate[1] = locate[1];
         this.dir = dir;
-        this.color = color;
+        this.color[0] = color[0];
+        this.color[1] = color[1];
+        this.color[2] = color[2];
     }
 }
 
