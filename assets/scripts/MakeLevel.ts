@@ -1,4 +1,5 @@
-import { _decorator, Component, Node, Sprite, SpriteFrame, Color, resources, EventTouch, instantiate, director, Label, Button } from 'cc';
+import { _decorator, Component, Node, Sprite, SpriteFrame, Color, resources, EventTouch, instantiate, director, Label, Button, native } from 'cc';
+import { NATIVE } from 'cc/env';
 import { LightPiece } from './LightPiece';
 import { Num2Color, ColorName, MirrorName, StableName } from './MainTheme'
 import { ClearMatrix, matrix1, matrix2, GetColor } from './Square';
@@ -626,7 +627,13 @@ export class MakeLevel extends Component {
         }
 
         // return 
-        console.log(compressed_code);
+        // console.log(compressed_code);
+        if (NATIVE) {
+            native.copyTextToClipboard(compressed_code);
+        }
+        else {
+            console.log(compressed_code);
+        }
     }
 
     update(deltaTime: number) {
