@@ -1,13 +1,14 @@
 
 import { _decorator, Component, Node, Sprite, SpriteFrame, Color, Button, Label, sys, resources, director } from 'cc';
 import { CurrentTotalLevel, Level, Name, Diff, Des, Suc } from './LevelData';
-import { CurrentLevel } from './FirstPage';
+import { CurrentLevel, ImportedStr } from './FirstPage';
 import { LightPiece } from './LightPiece';
 import { LightSource, LightTravel } from './LightTravel';
 import { ClearMatrix, matrix1, matrix2, GetColor } from './Square';
 import { MirrorState, Mirror } from './Mirror';
 import { MapInfo } from './MapInfo';
 import { Flower } from './Flower';
+import { MainThemeInterface } from './MainThemeInterface';
 const { ccclass } = _decorator;
 
 function Char2Num(str: string): number {
@@ -144,7 +145,7 @@ function GenerateLocate(i: number): number[] {
 }
 
 @ccclass('MainTheme')
-export class MainTheme extends Component {
+export class MainTheme extends Component implements MainThemeInterface {
     level_index = CurrentLevel[0] - 1;
     level_flag: boolean;
     level_name = Name[this.level_index];
@@ -163,7 +164,24 @@ export class MainTheme extends Component {
 
     onLoad() {
         ClearMatrix();
-        
+        this.InitLightPiece();
+
+        if (ImportedStr != '') {
+            this.level_flag = this.SetImportedLevel(ImportedStr);
+            if (!this.level_flag) {
+            }
+        } else {
+            this.level_index = CurrentLevel[0] - 1;
+            this.level_name = Name[this.level_index];
+            this.level_difficulty = Diff[this.level_index];
+            this.describe_str = Des[this.level_index];
+            this.success_str = Suc[this.level_index];
+            this.level_flag = this.SetLevel();
+        }
+
+    }
+
+    InitLightPiece() {
         let i:number, j:number, dir:number;
         for(i=0; i<15; i++) {
             for(j=0; j<15; j++){
@@ -190,8 +208,6 @@ export class MainTheme extends Component {
                 }
             }
         }
-
-        this.level_flag = this.SetLevel();
     }
 
     start() {
@@ -521,6 +537,35 @@ export class MainTheme extends Component {
         return true;
     }
 
+    SetImportedLevel(level_str: string) {
+        let name = this.node.getChildByName('LevelName');
+        let label = name.getComponent(Label);
+        label.string = '自定义关卡';
+
+        // let diff = this.node.getChildByName('LevelDifficulty');
+        // if(this.level_difficulty > 0) {
+        //     let sprite = diff.getComponent(Sprite);
+        //     let path = 'stars/star' + this.level_difficulty + '/spriteFrame';
+        //     resources.load(path, SpriteFrame, (_err: any, spriteFrame: SpriteFrame) => {
+        //         sprite.spriteFrame = spriteFrame;
+        //     });
+        // }
+
+        let pre_level = this.node.getChildByName('PrevLevel').getComponent(Button);
+        pre_level.interactable = false;
+
+        let next_level = this.node.getChildByName('NextLevel').getComponent(Button);
+        next_level.interactable = false;
+
+        this.rotate_form = true;
+        let rotate_label = this.node.getChildByName('Rotate').getChildByName('Label').getComponent(Label);
+        rotate_label.string = '逆时针';
+
+        if(level_str == null || level_str.length == 0) return false;
+        this.DecodeLevelStr(level_str);
+        return true;
+    }
+
     SetUserState(success:boolean) {
         let LevelState = JSON.parse(sys.localStorage.getItem('LevelState'));
         let label = this.node.getChildByName('UserState').getComponent(Label);
@@ -660,7 +705,8 @@ export class MainTheme extends Component {
     }
 
     SelectLevel() {
-        if(this.level_index < 25) director.loadScene('LevelSelect1');
+        if(ImportedStr != '') director.loadScene('FirstPage');
+        else if(this.level_index < 25) director.loadScene('LevelSelect1');
         else if(this.level_index < 50) director.loadScene('LevelSelect2');
         else if(this.level_index < 75) director.loadScene('LevelSelect3');
         else director.loadScene('LevelSelect4');
@@ -697,5 +743,21 @@ export class MainTheme extends Component {
         while(this.LS_array.length > 0) this.LS_array.pop();
 
         ClearMatrix();
+    }
+
+    GetChildrenNum(): number {
+        return this.children_num;
+    }
+
+    UpdateMirrorJson(node:Node) {
+        let level_name = 'Level' + (this.level_index + 1);
+        let index = this.mirror_array.findIndex(arrayNode => arrayNode.uuid === node.uuid);
+        let mirror = this.mirror_array[index].getComponent(Mirror);
+
+        let MS_array = JSON.parse(sys.localStorage.getItem(level_name));
+        MS_array[index].dir = mirror.dir;
+        MS_array[index].area = mirror.area;
+        MS_array[index].locate = [mirror.squarex, mirror.squarey];
+        sys.localStorage.setItem(level_name, JSON.stringify(MS_array));
     }
 }

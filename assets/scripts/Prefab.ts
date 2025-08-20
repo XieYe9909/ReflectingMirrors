@@ -1,5 +1,5 @@
 import { _decorator, Component, EventTouch, Node, Sprite } from 'cc';
-import { MakeLevel } from './MakeLevel';
+import { MakeLevelInterface } from './MakeLevelInterface';
 const { ccclass, property } = _decorator;
 
 export type Type = 'light' | 'mirror' | 'stable' | 'flower';
@@ -11,10 +11,10 @@ export class Prefab extends Component {
     index: number = 0;
     color: boolean[] = [false, false, false];
     type: Type = null;
-    make_level: MakeLevel = null;
+    make_level: MakeLevelInterface = null;
 
     onLoad() {
-        this.make_level = this.node.parent.getComponent(MakeLevel);
+        this.make_level = this.node.parent.getComponent("MakeLevel");
     }
 
     start() {

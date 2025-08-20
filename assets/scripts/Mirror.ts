@@ -2,8 +2,9 @@
 import { _decorator, Node, EventTouch, Component, sys } from 'cc';
 import { MapInfo } from './MapInfo';
 import { matrix1, matrix2 } from './Square';
-import { MainTheme } from './MainTheme';
-import { getIndexByID } from './utils';
+// import { MainTheme } from './MainTheme';
+// import { getIndexByID } from './utils';
+import { MainThemeInterface } from './MainThemeInterface';
 const { ccclass } = _decorator;
 
 export class MirrorState {
@@ -28,10 +29,10 @@ export class Mirror extends Component {
     squarex: number;
     squarey: number;
     isClick = true;
-    main_theme: MainTheme;
+    main_theme: MainThemeInterface;
 
     onLoad() {
-        let main_theme = this.node.parent.getComponent(MainTheme);
+        let main_theme = this.node.parent.getComponent("MainTheme");
         this.main_theme = main_theme;
     }
 
@@ -73,19 +74,20 @@ export class Mirror extends Component {
         }
     }
 
-    ChangeMirrorState(index:number) {
-        let level_name = 'Level' + (this.main_theme.level_index + 1);
+    // ChangeMirrorState(index:number) {
+    //     let level_name = 'Level' + (this.main_theme.level_index + 1);
 
-        let MS_array = JSON.parse(sys.localStorage.getItem(level_name));
-        MS_array[index].dir = this.dir;
-        MS_array[index].area = this.area;
-        MS_array[index].locate = [this.squarex, this.squarey];
-        sys.localStorage.setItem(level_name, JSON.stringify(MS_array));
-    }
+    //     let MS_array = JSON.parse(sys.localStorage.getItem(level_name));
+    //     MS_array[index].dir = this.dir;
+    //     MS_array[index].area = this.area;
+    //     MS_array[index].locate = [this.squarex, this.squarey];
+    //     sys.localStorage.setItem(level_name, JSON.stringify(MS_array));
+    // }
 
     touchStart (event:EventTouch) {
         this.isClick = true;
-        this.node.setSiblingIndex(this.main_theme.children_num - 1);
+        // this.node.setSiblingIndex(this.main_theme.children_num - 1);
+        this.node.setSiblingIndex(this.main_theme.GetChildrenNum() - 1);
         this.node.on(Node.EventType.TOUCH_END, this.touchEnd, this);
         this.node.on(Node.EventType.TOUCH_MOVE, this.touchMove, this);
         this.scheduleOnce(function(){
@@ -94,13 +96,14 @@ export class Mirror extends Component {
     }
 
     touchEnd (event:EventTouch) {
-        let index = getIndexByID(this.node, this.main_theme.mirror_array);
+        // let index = getIndexByID(this.node, this.main_theme.mirror_array);
         if(this.isClick){
             if(this.rotatable){
                 if(this.main_theme.rotate_form) this.dir = (this.dir + 1) % 8;
                 else this.dir = (this.dir + 7) % 8;
                 this.node.setRotationFromEuler(0, 0, this.dir * 45);
-                this.ChangeMirrorState(index);
+                // this.ChangeMirrorState(index);
+                this.main_theme.UpdateMirrorJson(this.node);
             }
             if(this.area == 1){
                 if((this.id>2 && this.id<9) || this.id>14) this.node.setSiblingIndex(0);
@@ -136,7 +139,8 @@ export class Mirror extends Component {
                     if((this.id>2 && this.id<9) || this.id>14) this.node.setSiblingIndex(0);
                     this.node.setPosition(this.squarex*MapInfo.totalsize() + MapInfo.xshift1(), this.squarey*MapInfo.totalsize() + MapInfo.yshift1(), 0);
                     this.main_theme.ChangeMirror();
-                    this.ChangeMirrorState(index);
+                    // this.ChangeMirrorState(index);
+                    this.main_theme.UpdateMirrorJson(this.node);
                 }
                 else{
                     if(this.area == 1){
@@ -164,7 +168,8 @@ export class Mirror extends Component {
                     this.squarex = new_x;
                     this.squarey = new_y;
                     this.node.setPosition(this.squarex*MapInfo.totalsize2x() + MapInfo.xshift2(), this.squarey*MapInfo.totalsize2y() + MapInfo.yshift2(), 0);
-                    this.ChangeMirrorState(index);
+                    // this.ChangeMirrorState(index);
+                    this.main_theme.UpdateMirrorJson(this.node);
                 }
                 else{
                     if(this.area == 1){

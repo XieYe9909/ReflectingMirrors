@@ -8,6 +8,7 @@ import { Prefab } from './Prefab';
 import { Item } from './Item';
 import { LightSource, LightTravel } from './LightTravel';
 import { Flower } from './Flower';
+import { MakeLevelInterface, Mode } from './MakeLevelInterface';
 const { ccclass, property } = _decorator;
 
 function GenerateLocate(i: number): number[] {
@@ -20,10 +21,8 @@ function GenerateLocate(i: number): number[] {
     }
 }
 
-type Mode = 'add' | 'delete' | 'none';
-
 @ccclass('MakeLevel')
-export class MakeLevel extends Component {
+export class MakeLevel extends Component implements MakeLevelInterface {
     prefab_array = new Array<Node>();
     frame_array = new Array<Node>();
     LP_array = new Array<Node>();
@@ -539,8 +538,8 @@ export class MakeLevel extends Component {
         for (let ls of this.mirror_array) {
             mirror_list.push(ls.getComponent(Item));
         }
-        let mirror_num = new Array<number>(17);
-        for(let i=0; i<17; i++) mirror_num[i] = 0;
+        let mirror_num = new Array<number>(20);
+        for(let i=0; i<20; i++) mirror_num[i] = 0;
         mirror_list.sort(CmpItem);
         for(let item of mirror_list) {
             let type = 16;
@@ -550,7 +549,7 @@ export class MakeLevel extends Component {
             }
             mirror_num[item.id] += 1;
         }
-        for(let i=0; i<17; i++) {
+        for(let i=0; i<20; i++) {
             if (mirror_num[i] > 0) {
                 code += Num2CharX(i);
                 code += Num2CharX(mirror_num[i]);
@@ -628,8 +627,21 @@ export class MakeLevel extends Component {
 
         // return 
         // console.log(compressed_code);
-        if (NATIVE) {
-            native.copyTextToClipboard(compressed_code);
+        // if (NATIVE) {
+        //     native.copyTextToClipboard(compressed_code);
+        // }
+
+        if (typeof wx !== 'undefined') {
+            console.log("Copying to clipboard...");
+            wx.setClipboardData({
+                data: compressed_code},
+            ).then(() => {
+                wx.showToast({
+                  title: '复制成功',
+                })
+            }).catch(err => {
+              console.error('复制失败', err)
+            })
         }
         else {
             console.log(compressed_code);
