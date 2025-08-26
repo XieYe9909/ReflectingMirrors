@@ -13,7 +13,7 @@ export class Item extends Component {
     dir: number;
     locate: number[];
     color: boolean[] = [false, false, false];
-    rotatable :boolean;
+    rotatable: boolean;
     make_level: MakeLevelInterface = null;
     type: Type = null;
     isClick: boolean = false;

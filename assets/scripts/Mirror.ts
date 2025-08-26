@@ -8,14 +8,17 @@ import { MainThemeInterface } from './MainThemeInterface';
 const { ccclass } = _decorator;
 
 export class MirrorState {
-    public dir:number;
-    public area:number;
-    public locate:number[];
+    public dir: number;
+    public area: number;
+    public locate: number[];
 
-    constructor(dir:number, area:number, locate:number[]) {
+    constructor(dir: number, area: number, locate: number[]) {
         this.dir = dir;
         this.area = area;
-        this.locate = locate;
+        
+        this.locate = new Array<number>(2);
+        this.locate[0] = locate[0];
+        this.locate[1] = locate[1];
     }
 }
 
@@ -87,7 +90,7 @@ export class Mirror extends Component {
     touchStart (event:EventTouch) {
         this.isClick = true;
         // this.node.setSiblingIndex(this.main_theme.children_num - 1);
-        this.node.setSiblingIndex(this.main_theme.GetChildrenNum() - 1);
+        this.node.setSiblingIndex(this.main_theme.getChildrenNum() - 1);
         this.node.on(Node.EventType.TOUCH_END, this.touchEnd, this);
         this.node.on(Node.EventType.TOUCH_MOVE, this.touchMove, this);
         this.scheduleOnce(function(){
@@ -103,13 +106,13 @@ export class Mirror extends Component {
                 else this.dir = (this.dir + 7) % 8;
                 this.node.setRotationFromEuler(0, 0, this.dir * 45);
                 // this.ChangeMirrorState(index);
-                this.main_theme.UpdateMirrorJson(this.node);
+                this.main_theme.updateMirrorJson(this.node);
             }
             if(this.area == 1){
                 if((this.id>2 && this.id<9) || this.id>14) this.node.setSiblingIndex(0);
                 this.node.setPosition(this.squarex*MapInfo.totalsize() + MapInfo.xshift1(), this.squarey*MapInfo.totalsize() + MapInfo.yshift1(), 0);
                 matrix1[this.squarex*15 + this.squarey].mirrordir = this.dir;
-                this.main_theme.ChangeMirror();
+                this.main_theme.changeMirror();
             }
             else{
                 this.node.setPosition(this.squarex*MapInfo.totalsize2x() + MapInfo.xshift2(), this.squarey*MapInfo.totalsize2y() + MapInfo.yshift2(), 0);
@@ -138,9 +141,9 @@ export class Mirror extends Component {
 
                     if((this.id>2 && this.id<9) || this.id>14) this.node.setSiblingIndex(0);
                     this.node.setPosition(this.squarex*MapInfo.totalsize() + MapInfo.xshift1(), this.squarey*MapInfo.totalsize() + MapInfo.yshift1(), 0);
-                    this.main_theme.ChangeMirror();
+                    this.main_theme.changeMirror();
                     // this.ChangeMirrorState(index);
-                    this.main_theme.UpdateMirrorJson(this.node);
+                    this.main_theme.updateMirrorJson(this.node);
                 }
                 else{
                     if(this.area == 1){
@@ -158,7 +161,7 @@ export class Mirror extends Component {
                 if(matrix2[new_x*2 + new_y] == false){
                     if(this.area == 1){
                         matrix1[this.squarex*15 + this.squarey].id = -1;
-                        this.main_theme.ChangeMirror();
+                        this.main_theme.changeMirror();
                     }
                     else{
                         matrix2[this.squarex*2 + this.squarey] = false;
@@ -169,7 +172,7 @@ export class Mirror extends Component {
                     this.squarey = new_y;
                     this.node.setPosition(this.squarex*MapInfo.totalsize2x() + MapInfo.xshift2(), this.squarey*MapInfo.totalsize2y() + MapInfo.yshift2(), 0);
                     // this.ChangeMirrorState(index);
-                    this.main_theme.UpdateMirrorJson(this.node);
+                    this.main_theme.updateMirrorJson(this.node);
                 }
                 else{
                     if(this.area == 1){

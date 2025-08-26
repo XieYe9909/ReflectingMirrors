@@ -1,7 +1,7 @@
 
 import { _decorator, Component, Node, Sprite, SpriteFrame, Color, Button, Label, sys, resources, director } from 'cc';
 import { CurrentTotalLevel, Level, Name, Diff, Des, Suc } from './LevelData';
-import { CurrentLevel, ImportedStr } from './FirstPage';
+import { CurrentLevel } from './FirstPage';
 import { LightPiece } from './LightPiece';
 import { LightSource, LightTravel } from './LightTravel';
 import { ClearMatrix, matrix1, matrix2, GetColor } from './Square';
@@ -9,6 +9,7 @@ import { MirrorState, Mirror } from './Mirror';
 import { MapInfo } from './MapInfo';
 import { Flower } from './Flower';
 import { MainThemeInterface } from './MainThemeInterface';
+import { generateLocate } from './utils';
 const { ccclass } = _decorator;
 
 function Char2Num(str: string): number {
@@ -131,57 +132,44 @@ export function Id2MirrorName(id: number) {
     }
 }
 
-function GenerateLocate(i: number): number[] {
-    let x:number, y:number;
-    if(i < 12) {
-        x = i;
-        y = 1;
-    }
-    else {
-        x = i - 12;
-        y = 0;
-    }
-    return [x, y];
-}
-
 @ccclass('MainTheme')
 export class MainTheme extends Component implements MainThemeInterface {
-    level_index = CurrentLevel[0] - 1;
-    level_flag: boolean;
-    level_name = Name[this.level_index];
-    level_difficulty = Diff[this.level_index];
-    describe_str = Des[this.level_index];
-    success_str = Suc[this.level_index];
+    level_index: number;
+    level_name: string;
+    level_code: string;
+    level_difficulty: number;
+    describe_str: string;
+    success_str: string;
+    level_flag: boolean;  // 关卡是否成功加载
 
     rotate_form: boolean;
-    success: boolean;
+    // success: boolean;
     flower_array = new Array<Node>();
     mirror_array = new Array<Node>();
     obj_array = new Array<Node>();
     LP_array = new Array<Node>();
     LS_array = new Array<LightSource>();
-    children_num:number;
+    children_num: number;
+    tot_level_num: number;  // 总关卡数
+
+    customized_level: boolean;  // 是否为自定义关卡
 
     onLoad() {
         ClearMatrix();
-        this.InitLightPiece();
+        this.initLightPiece();
 
-        if (ImportedStr != '') {
-            this.level_flag = this.SetImportedLevel(ImportedStr);
-            if (!this.level_flag) {
-            }
-        } else {
-            this.level_index = CurrentLevel[0] - 1;
-            this.level_name = Name[this.level_index];
-            this.level_difficulty = Diff[this.level_index];
-            this.describe_str = Des[this.level_index];
-            this.success_str = Suc[this.level_index];
-            this.level_flag = this.SetLevel();
-        }
-
+        this.level_index = CurrentLevel[0] - 1;
+        this.level_name = Name[this.level_index];
+        this.level_code = Level[this.level_index];
+        this.level_difficulty = Diff[this.level_index];
+        this.describe_str = Des[this.level_index];
+        this.success_str = Suc[this.level_index];
+        this.customized_level = false;
+        this.tot_level_num = CurrentTotalLevel;
+        this.level_flag = this.setLevel();
     }
 
-    InitLightPiece() {
+    initLightPiece() {
         let i:number, j:number, dir:number;
         for(i=0; i<15; i++) {
             for(j=0; j<15; j++){
@@ -220,16 +208,16 @@ export class MainTheme extends Component implements MainThemeInterface {
             L_array[i] = new LightSource(LS.locate, LS.dir, LS.color);
         }
         LightTravel(L_array);
-        this.DrawLight();
+        this.drawLight();
         
         for(let i=0; i<this.flower_array.length; i++) {
             let flower = this.flower_array[i].getComponent(Flower);
             flower.ChangeState();
         }
-        this.Success();
+        this.success();
     }
 
-    SetLight(locate: number[], color: boolean[], dir: number) {
+    setLight(locate: number[], color: boolean[], dir: number) {
         let color_name = Color2Name(color);
 
         let node = new Node('light');
@@ -251,7 +239,7 @@ export class MainTheme extends Component implements MainThemeInterface {
         this.obj_array.push(node);
     }
 
-    SetFlower(locate: number[], color: boolean[]) {
+    setFlower(locate: number[], color: boolean[]) {
         let node = new Node('flower');
         this.node.addChild(node);
 
@@ -276,7 +264,7 @@ export class MainTheme extends Component implements MainThemeInterface {
         this.flower_array.push(node);
     }
 
-    SetMirror(id_arr: number[], num_arr: number[]) {
+    setMirror(id_arr: number[], num_arr: number[]) {
         let type_num = id_arr.length;
         for(let i=0; i<type_num; i++) {
             let id = id_arr[i];
@@ -303,6 +291,10 @@ export class MainTheme extends Component implements MainThemeInterface {
             }
         }
 
+        if (this.customized_level) {
+            return;  // 自定义关卡的镜子状态在 MyLevel 中设置
+        }
+
         let level_name = 'Level' + (this.level_index + 1);
         let MS_str = sys.localStorage.getItem(level_name);
         let MS_array: MirrorState[];
@@ -310,7 +302,7 @@ export class MainTheme extends Component implements MainThemeInterface {
         if(MS_str == null || MS_str.length == 0) {
             MS_array = new Array<MirrorState>();
             for(let i=0; i<this.mirror_array.length; i++) {
-                let mirror_state = new MirrorState(0, 2, GenerateLocate(i));
+                let mirror_state = new MirrorState(0, 2, generateLocate(i));
                 MS_array.push(mirror_state);
             }
             sys.localStorage.setItem(level_name, JSON.stringify(MS_array));
@@ -320,7 +312,7 @@ export class MainTheme extends Component implements MainThemeInterface {
             if(MS_array.length != this.mirror_array.length) {
                 while(MS_array.length>0) MS_array.pop();
                 for(let i=0; i<this.mirror_array.length; i++) {
-                    let mirror_state = new MirrorState(0, 2, GenerateLocate(i));
+                    let mirror_state = new MirrorState(0, 2, generateLocate(i));
                     MS_array.push(mirror_state);
                 }
 
@@ -336,7 +328,7 @@ export class MainTheme extends Component implements MainThemeInterface {
         }
     }
 
-    SetGuangshan(locate: number[], dir: number) {
+    setGuangshan(locate: number[], dir: number) {
         let node = new Node('guangshan');
         this.node.addChild(node);
 
@@ -355,7 +347,7 @@ export class MainTheme extends Component implements MainThemeInterface {
         this.obj_array.push(node);
     }
 
-    SetStable(locate: number[], id: number) {
+    setStable(locate: number[], id: number) {
         let node = new Node('stable');
         this.node.addChild(node);
         node.layer = 33554432;
@@ -397,7 +389,7 @@ export class MainTheme extends Component implements MainThemeInterface {
         this.obj_array.push(node);
     }
 
-    DecodeLevelStr(str: string) {
+    decodeLevelCode(str: string) {
         enum DecodeMode {
             lightsource,
             flower,
@@ -451,7 +443,7 @@ export class MainTheme extends Component implements MainThemeInterface {
                     index++;
                     i = i + 2;
                 }
-                this.SetMirror(id_arr, num_arr);
+                this.setMirror(id_arr, num_arr);
             } 
             else if (mode == DecodeMode.lightsource || mode == DecodeMode.guangshan) {
                 while (i<str.length && !(str.charCodeAt(i) >= 65 && str.charCodeAt(i) <= 86)) {
@@ -461,10 +453,10 @@ export class MainTheme extends Component implements MainThemeInterface {
                         locate[1] = Char2NumY(str.charCodeAt(i));
                         dir = Char2NumX(str.charCodeAt(i+1));
                         if (mode == DecodeMode.lightsource) {
-                            this.SetLight(locate, color, dir);
+                            this.setLight(locate, color, dir);
 
                         } else {
-                            this.SetGuangshan(locate, dir);
+                            this.setGuangshan(locate, dir);
                         }
                         i = i + 2;
                     }
@@ -481,9 +473,9 @@ export class MainTheme extends Component implements MainThemeInterface {
                             locate[1] = Char2NumY(str.charCodeAt(i));
                             start_y = locate[1];
                             if (mode == DecodeMode.flower) {
-                                this.SetFlower(locate, color);
+                                this.setFlower(locate, color);
                             } else if (mode == DecodeMode.stable) {
-                                this.SetStable(locate, id);
+                                this.setStable(locate, id);
                             }
                             i++;
                         }
@@ -491,9 +483,9 @@ export class MainTheme extends Component implements MainThemeInterface {
                             let end_y = Char2NumY(str.charCodeAt(i + 1));
                             for (locate[1] = start_y + 1; locate[1] <= end_y; locate[1]++) {
                                 if (mode == DecodeMode.flower) {
-                                    this.SetFlower(locate, color);
+                                    this.setFlower(locate, color);
                                 } else if (mode == DecodeMode.stable) {
-                                    this.SetStable(locate, id);
+                                    this.setStable(locate, id);
                                 }
                             }
                             i = i + 2;
@@ -504,14 +496,14 @@ export class MainTheme extends Component implements MainThemeInterface {
         }
     }
 
-    SetLevel() {
+    setLevel() {
         let name = this.node.getChildByName('LevelName');
         let label = name.getComponent(Label);
         if(this.level_name != null) label.string = (this.level_index + 1) + ' ' + this.level_name;
         else label.string = String(this.level_index + 1);
 
-        let diff = this.node.getChildByName('LevelDifficulty');
         if(this.level_difficulty > 0) {
+            let diff = this.node.getChildByName('LevelDifficulty');
             let sprite = diff.getComponent(Sprite);
             let path = 'stars/star' + this.level_difficulty + '/spriteFrame';
             resources.load(path, SpriteFrame, (_err: any, spriteFrame: SpriteFrame) => {
@@ -524,49 +516,19 @@ export class MainTheme extends Component implements MainThemeInterface {
         else pre_level.interactable = true;
 
         let next_level = this.node.getChildByName('NextLevel').getComponent(Button);
-        if(this.level_index == CurrentTotalLevel - 1) next_level.interactable = false;
+        if(this.level_index == this.tot_level_num - 1) next_level.interactable = false;
         else next_level.interactable = true;
 
         this.rotate_form = true;
         let rotate_label = this.node.getChildByName('Rotate').getChildByName('Label').getComponent(Label);
         rotate_label.string = '逆时针';
 
-        let level_str = Level[this.level_index];
-        if(level_str == null || level_str.length == 0) return false;
-        this.DecodeLevelStr(level_str);
+        if(this.level_code == null || this.level_code.length == 0) return false;
+        this.decodeLevelCode(this.level_code);
         return true;
     }
 
-    SetImportedLevel(level_str: string) {
-        let name = this.node.getChildByName('LevelName');
-        let label = name.getComponent(Label);
-        label.string = '自定义关卡';
-
-        // let diff = this.node.getChildByName('LevelDifficulty');
-        // if(this.level_difficulty > 0) {
-        //     let sprite = diff.getComponent(Sprite);
-        //     let path = 'stars/star' + this.level_difficulty + '/spriteFrame';
-        //     resources.load(path, SpriteFrame, (_err: any, spriteFrame: SpriteFrame) => {
-        //         sprite.spriteFrame = spriteFrame;
-        //     });
-        // }
-
-        let pre_level = this.node.getChildByName('PrevLevel').getComponent(Button);
-        pre_level.interactable = false;
-
-        let next_level = this.node.getChildByName('NextLevel').getComponent(Button);
-        next_level.interactable = false;
-
-        this.rotate_form = true;
-        let rotate_label = this.node.getChildByName('Rotate').getChildByName('Label').getComponent(Label);
-        rotate_label.string = '逆时针';
-
-        if(level_str == null || level_str.length == 0) return false;
-        this.DecodeLevelStr(level_str);
-        return true;
-    }
-
-    SetUserState(success:boolean) {
+    setUserState(success: boolean) {
         let LevelState = JSON.parse(sys.localStorage.getItem('LevelState'));
         let label = this.node.getChildByName('UserState').getComponent(Label);
 
@@ -587,7 +549,7 @@ export class MainTheme extends Component implements MainThemeInterface {
         }
     }
 
-    Success() {
+    success() {
         let success:boolean = true;
         let i:number;
         for(i=0; i<this.flower_array.length; i++) {
@@ -601,16 +563,16 @@ export class MainTheme extends Component implements MainThemeInterface {
         if(success) {
             if(this.success_str != null) label.string = '        过关！' + this.success_str;
             else label.string = '';
-            this.SetUserState(true);
+            this.setUserState(true);
         }
         else {
             if(this.describe_str != null) label.string = '        ' + this.describe_str;
             else label.string = '';
-            this.SetUserState(false);
+            this.setUserState(false);
         }
     }
 
-    DrawLight() {
+    drawLight() {
         for(let i=0; i<this.LP_array.length; i++) {
             let LP = this.LP_array[i].getComponent(LightPiece);
             let locate = LP.locate;
@@ -628,7 +590,7 @@ export class MainTheme extends Component implements MainThemeInterface {
         }
     }
 
-    ChangeMirror() {
+    changeMirror() {
         let i:number, j:number;
         for(i=0; i<15*15; i++) {
             for(j=0; j<8*9; j++) {
@@ -642,42 +604,44 @@ export class MainTheme extends Component implements MainThemeInterface {
             L_array[i] = new LightSource(LS.locate, LS.dir, LS.color);
         }
         LightTravel(L_array);
-        this.DrawLight();
+        this.drawLight();
     
         for(i=0; i<this.flower_array.length; i++) {
             let flower = this.flower_array[i].getComponent(Flower);
             flower.ChangeState();
         }
-        this.Success();
+        this.success();
     }
 
-    PrevLevel() {
+    prevLevel() {
         CurrentLevel[0]--;
         this.level_index--;
         this.level_name = Name[this.level_index];
+        this.level_code = Level[this.level_index];
         this.level_difficulty = Diff[this.level_index];
         this.describe_str = Des[this.level_index];
         this.success_str = Suc[this.level_index];
 
-        this.DestroyLevel();
-        this.level_flag = this.SetLevel();
+        this.destroyLevel();
+        this.level_flag = this.setLevel();
         this.start();
     }
 
-    NextLevel() {
+    nextLevel() {
         CurrentLevel[0]++;
         this.level_index++;
         this.level_name = Name[this.level_index];
+        this.level_code = Level[this.level_index];
         this.level_difficulty = Diff[this.level_index];
         this.describe_str = Des[this.level_index];
         this.success_str = Suc[this.level_index];
 
-        this.DestroyLevel();
-        this.level_flag = this.SetLevel();
+        this.destroyLevel();
+        this.level_flag = this.setLevel();
         this.start();
     }
 
-    Reset() {
+    reset() {
         if(!this.level_flag) return;
 
         let level_name = 'Level' + (this.level_index + 1);
@@ -686,7 +650,7 @@ export class MainTheme extends Component implements MainThemeInterface {
         for(let i=0; i<MS_array.length; i++) {
             MS_array[i].dir = 0;
             MS_array[i].area = 2;
-            MS_array[i].locate = GenerateLocate(i);
+            MS_array[i].locate = generateLocate(i);
             mirror = this.mirror_array[i].getComponent(Mirror);
             if(mirror.area == 1) {
                 matrix1[mirror.squarex*15 + mirror.squarey].id = -1;
@@ -695,24 +659,23 @@ export class MainTheme extends Component implements MainThemeInterface {
         }
 
         for(let i=0; i<12*2; i++) {
-            let [x, y] = GenerateLocate(i);
+            let [x, y] = generateLocate(i);
             if(i < MS_array.length) matrix2[x*2 + y] = true;
             else matrix2[x*2 + y] = false;
         }
 
-        this.ChangeMirror();
+        this.changeMirror();
         sys.localStorage.setItem(level_name, JSON.stringify(MS_array));
     }
 
-    SelectLevel() {
-        if(ImportedStr != '') director.loadScene('FirstPage');
-        else if(this.level_index < 25) director.loadScene('LevelSelect1');
+    selectLevel() {
+        if(this.level_index < 25) director.loadScene('LevelSelect1');
         else if(this.level_index < 50) director.loadScene('LevelSelect2');
         else if(this.level_index < 75) director.loadScene('LevelSelect3');
         else director.loadScene('LevelSelect4');
     }
 
-    SetRotate() {
+    setRotate() {
         let label = this.node.getChildByName('Rotate').getChildByName('Label').getComponent(Label);
         if(this.rotate_form) {
             this.rotate_form = false;
@@ -724,7 +687,7 @@ export class MainTheme extends Component implements MainThemeInterface {
         }
     }
 
-    DestroyLevel() {
+    destroyLevel() {
         while(this.obj_array.length > 0) {
             let node = this.obj_array.pop();
             node.removeFromParent();
@@ -745,11 +708,11 @@ export class MainTheme extends Component implements MainThemeInterface {
         ClearMatrix();
     }
 
-    GetChildrenNum(): number {
+    getChildrenNum(): number {
         return this.children_num;
     }
 
-    UpdateMirrorJson(node:Node) {
+    updateMirrorJson(node: Node) {
         let level_name = 'Level' + (this.level_index + 1);
         let index = this.mirror_array.findIndex(arrayNode => arrayNode.uuid === node.uuid);
         let mirror = this.mirror_array[index].getComponent(Mirror);

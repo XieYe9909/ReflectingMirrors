@@ -9,7 +9,12 @@ import { Item } from './Item';
 import { LightSource, LightTravel } from './LightTravel';
 import { Flower } from './Flower';
 import { MakeLevelInterface, Mode } from './MakeLevelInterface';
+import { SaveLevel } from './Storage';
+import { showWechatInputName } from './WeChatUtils';
 const { ccclass, property } = _decorator;
+
+// 声明 wx 变量以避免找不到名称错误
+declare const wx: any;
 
 function GenerateLocate(i: number): number[] {
     switch (Math.floor(i / 12)) {
@@ -418,6 +423,9 @@ export class MakeLevel extends Component implements MakeLevelInterface {
             node.destroy();
         }
 
+        let export_button = this.node.getChildByName('Export').getComponent(Button);
+        export_button.interactable = false;
+
         let save_button = this.node.getChildByName('Save').getComponent(Button);
         save_button.interactable = false;
     }
@@ -434,8 +442,11 @@ export class MakeLevel extends Component implements MakeLevelInterface {
             }
         }
 
+        let export_button = this.node.getChildByName('Export').getComponent(Button);
+        export_button.interactable = success && this.mirror_array.length > 0 && this.mirror_array.length <= 12 ? true : false;
+
         let save_button = this.node.getChildByName('Save').getComponent(Button);
-        save_button.interactable = success ? true : false;
+        save_button.interactable = success && this.mirror_array.length > 0 && this.mirror_array.length <= 12 ? true : false;
     }
 
     generateCode() {
@@ -625,28 +636,118 @@ export class MakeLevel extends Component implements MakeLevelInterface {
             compressed_code += PrintContinuousChar(first_ch, last_ch);
         }
 
-        // return 
-        // console.log(compressed_code);
-        // if (NATIVE) {
-        //     native.copyTextToClipboard(compressed_code);
-        // }
+        return compressed_code;
+    }
+
+    copyCode() {
+        let code = this.generateCode();
 
         if (typeof wx !== 'undefined') {
             console.log("Copying to clipboard...");
             wx.setClipboardData({
-                data: compressed_code},
+                data: code},
             ).then(() => {
                 wx.showToast({
-                  title: '复制成功',
+                  title: '已复制关卡代码到剪贴板',
                 })
             }).catch(err => {
               console.error('复制失败', err)
             })
         }
         else {
-            console.log(compressed_code);
+            console.log(code);
         }
     }
+
+    async saveLevel() {
+        if (typeof wx == 'undefined') {
+            console.log('Not in WeChat environment');
+
+            let name = "测试关卡";
+            let code = this.generateCode();
+            let mirror_num = this.mirror_array.length;
+            SaveLevel(name, code, mirror_num, false);
+
+            return null;  // 如果不是微信环境，直接返回 null
+        }
+
+        try {
+            let name = await showWechatInputName();
+            if (name !== null) {
+                if (name.length == 0) {
+                    name = '自定义关卡';
+                }
+                let code = this.generateCode();
+                let mirror_num = this.mirror_array.length;
+                let success = SaveLevel(name, code, mirror_num, false);
+                
+                if (success) {
+                    wx.showToast({
+                        title: '保存成功',
+                        icon: 'success'
+                    });
+                }
+                else {
+                    wx.showToast({
+                        title: '存档已满，无法保存',
+                        icon: 'error'
+                    });
+                }
+            }
+            else {
+                console.log('用户取消了输入');
+            }
+        }
+        catch (error) {
+            console.error('输入过程出错:', error);
+            wx.showToast({
+                title: '输入失败',
+                icon: 'error'
+            });
+        }
+    }
+
+    // async showWechatInputName(): Promise<string | null> {
+    //     let title = '自定义关卡名（15 字符以内）';
+    //     let content = '';
+    //     let placeholder = '请输入...';
+    //     let confirmText = '确定';
+    //     let cancelText = '取消';
+    //     const MAX_LENGTH = 15;
+
+    //     return new Promise((resolve) => {
+    //         wx.showModal({
+    //         title,
+    //         editable: true,
+    //         content,
+    //         placeholderText: placeholder,
+    //         confirmText,
+    //         cancelText,
+    //         success: (res: { confirm: any; content: any; }) => {
+    //             if (res.confirm) {
+    //                 // 用户点击确定，返回输入的内容
+    //                 let input = res.content || '';
+    //                 if (input.length > MAX_LENGTH) {
+    //                     wx.showToast({
+    //                         title: '最多输入 ${MAX_LENGTH} 个字符',
+    //                         icon: 'none'
+    //                     });
+    //                     input = input.substring(0, MAX_LENGTH);
+    //                 }
+    //                 resolve(input);
+    //             }
+    //             else {
+    //                 // 用户取消输入
+    //                 resolve(null);
+    //             }
+    //         },
+    //         fail: () => {
+    //             // 调用失败时也返回 null
+    //             resolve(null);
+    //         }
+    //         });
+    //     });
+    // }
 
     update(deltaTime: number) {
         

@@ -1,9 +1,9 @@
 import { _decorator, Node } from 'cc';
 
 export interface MainThemeInterface {
-    ChangeMirror() : void;
-    UpdateMirrorJson(node:Node) : void;
-    GetChildrenNum() : number;
+    changeMirror(): void;
+    updateMirrorJson(node: Node): void;
+    getChildrenNum(): number;
     
     rotate_form: boolean;
 }
