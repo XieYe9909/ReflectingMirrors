@@ -1,5 +1,4 @@
 import { _decorator, Component, Node, Sprite, SpriteFrame, Color, resources, EventTouch, instantiate, director, Label, Button, native } from 'cc';
-import { NATIVE } from 'cc/env';
 import { LightPiece } from './LightPiece';
 import { Num2Color, ColorName, MirrorName, StableName } from './MainTheme'
 import { ClearMatrix, matrix1, matrix2, GetColor } from './Square';
@@ -10,11 +9,12 @@ import { LightSource, LightTravel } from './LightTravel';
 import { Flower } from './Flower';
 import { MakeLevelInterface, Mode } from './MakeLevelInterface';
 import { SaveLevel } from './Storage';
-import { showWechatInputName } from './WeChatUtils';
+import { showUserConfirm, showWechatInputName } from './utils';
 const { ccclass, property } = _decorator;
 
 // 声明 wx 变量以避免找不到名称错误
 declare const wx: any;
+const MAX_MIRROR_NUM = 24;
 
 function GenerateLocate(i: number): number[] {
     switch (Math.floor(i / 12)) {
@@ -383,7 +383,15 @@ export class MakeLevel extends Component implements MakeLevelInterface {
         this.success();
     }
 
-    exit() {
+    async exit() {
+        if (typeof wx !== 'undefined') {
+            let save_confirm = await showUserConfirm('是否复制当前关卡代码到剪贴板？', '复制', '不复制', false);
+            if (save_confirm) {
+                this.copyCode();
+            }
+        } else {
+            console.log('非微信环境');
+        }
         director.loadScene('FirstPage');
     }
 
@@ -443,10 +451,10 @@ export class MakeLevel extends Component implements MakeLevelInterface {
         }
 
         let export_button = this.node.getChildByName('Export').getComponent(Button);
-        export_button.interactable = success && this.mirror_array.length > 0 && this.mirror_array.length <= 12 ? true : false;
+        export_button.interactable = success && this.mirror_array.length > 0 && this.mirror_array.length <= MAX_MIRROR_NUM ? true : false;
 
         let save_button = this.node.getChildByName('Save').getComponent(Button);
-        save_button.interactable = success && this.mirror_array.length > 0 && this.mirror_array.length <= 12 ? true : false;
+        save_button.interactable = success && this.mirror_array.length > 0 && this.mirror_array.length <= MAX_MIRROR_NUM ? true : false;
     }
 
     generateCode() {

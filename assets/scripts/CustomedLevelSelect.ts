@@ -1,7 +1,7 @@
 import { _decorator, Component, sys, Label, Button, director, Sprite, Color } from 'cc';
 import { SaveLevel, DeleteLevel, LevelInfo } from './Storage';
 import { CurrentLevel } from './FirstPage';
-import { showWechatInputName, showWechatInputCode } from './WeChatUtils';
+import { showWechatInputName, showWechatInputCode, showUserConfirm } from './utils';
 const { ccclass, property } = _decorator;
 
 // 声明 wx 变量以避免找不到名称错误
@@ -35,12 +35,15 @@ export class CustomedLevelSelect extends Component {
     start() {
         let next_page = this.node.getChildByName('NextPage');
         let previous_page = this.node.getChildByName('PrevPage');
+        let page_index = this.node.getChildByName('PageIndex');
 
         let previous_page_button = previous_page.getComponent(Button);
         let next_page_button = next_page.getComponent(Button);
+        let page_index_label = page_index.getComponent(Label);
 
         previous_page_button.interactable = (this.current_page > 1) ? true : false;
         next_page_button.interactable = (this.current_page < this.total_page) ? true : false;
+        page_index_label.string = this.current_page + ' / ' + this.total_page;
 
         for (let i = 1; i <= this.levels_per_page; i++) {
             let level_node = this.node.getChildByName('Level' + i);
@@ -143,7 +146,11 @@ export class CustomedLevelSelect extends Component {
         }
     }
 
-    deleteLevel(event, customEventData) {
+    async deleteLevel(event, customEventData) {
+        let confirm = await showUserConfirm('确定删除关卡？');
+        if (!confirm) {
+            return;
+        }
         let button_index = Number(event.target.parent.name.slice(5, event.target.name.length));
         let level_index = (this.current_page - 1) * this.levels_per_page + button_index - 1;
 

@@ -4,7 +4,7 @@ import { ClearMatrix } from './Square';
 import { CurrentLevel } from './FirstPage';
 import { LevelInfo, DeleteLevel } from './Storage';
 import { Mirror, MirrorState } from './Mirror';
-import { generateLocate } from './utils';
+import { generateLocate, showUserConfirm } from './utils';
 import { matrix1, matrix2 } from './Square';
 const { ccclass, property } = _decorator;
 
@@ -98,8 +98,12 @@ export class MyLevel extends MainTheme {
         director.loadScene('CustomedLevelSelect');
     }
 
-    reset() {
+    async reset() {
         if(!this.level_flag) return;
+        let confirm = await showUserConfirm('确定重置关卡？');
+        if (!confirm) {
+            return;
+        }
 
         let MS_array = this.level_info.MS_array;
         for(let i=0; i<MS_array.length; i++) {
