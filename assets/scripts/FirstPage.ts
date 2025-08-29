@@ -1,6 +1,7 @@
 
 import { _decorator, Component, sys, director } from 'cc';
 import { TotalLevel } from './LevelData';
+import { showUserConfirm } from './utils';
 const { ccclass } = _decorator;
 
 export let CurrentLevel = [0, 0];  // [Normal Level, My Level]
@@ -29,7 +30,11 @@ export class FirstPage extends Component {
         }
     }
 
-    ClearData() {
+    async ClearData() {
+        let confirm = await showUserConfirm('确认清除所有进度？此操作不可逆。');
+        if (!confirm) {
+            return;
+        }
         sys.localStorage.removeItem('CustomedLevelData');
         sys.localStorage.removeItem('LevelState');
         let LevelState = new Array<boolean>(TotalLevel);

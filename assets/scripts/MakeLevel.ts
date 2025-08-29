@@ -384,13 +384,9 @@ export class MakeLevel extends Component implements MakeLevelInterface {
     }
 
     async exit() {
-        if (typeof wx !== 'undefined') {
-            let save_confirm = await showUserConfirm('是否复制当前关卡代码到剪贴板？', '复制', '不复制', false);
-            if (save_confirm) {
-                this.copyCode();
-            }
-        } else {
-            console.log('非微信环境');
+        let confirm = await showUserConfirm('未保存的关卡数据将会丢失。确认退出？');
+        if (!confirm) {
+            return;
         }
         director.loadScene('FirstPage');
     }
