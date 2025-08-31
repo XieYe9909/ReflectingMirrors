@@ -5,5 +5,8 @@
   "version": "3.3.2",
   "creator": {
     "version": "3.8.7"
+  },
+  "devDependencies": {
+    "@types/wechat-miniprogram": "^3.4.8"
   }
 }

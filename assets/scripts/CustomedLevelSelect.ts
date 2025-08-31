@@ -1,11 +1,8 @@
 import { _decorator, Component, sys, Label, Button, director, Sprite, Color } from 'cc';
-import { SaveLevel, DeleteLevel, LevelInfo } from './Storage';
+import { saveLevel, deleteLevel, moveUpLevel, LevelInfo } from './Storage';
 import { CurrentLevel } from './FirstPage';
-import { showWechatInputName, showWechatInputCode, showUserConfirm } from './utils';
+import { showWechatInputCode, showUserConfirm } from './Utils';
 const { ccclass, property } = _decorator;
-
-// 声明 wx 变量以避免找不到名称错误
-declare const wx: any;
 
 @ccclass('CustomedLevelSelect')
 export class CustomedLevelSelect extends Component {
@@ -35,14 +32,17 @@ export class CustomedLevelSelect extends Component {
     start() {
         let next_page = this.node.getChildByName('NextPage');
         let previous_page = this.node.getChildByName('PrevPage');
+        let move_up = this.node.getChildByName('Level1').getChildByName('MoveUp');
         let page_index = this.node.getChildByName('PageIndex');
 
         let previous_page_button = previous_page.getComponent(Button);
         let next_page_button = next_page.getComponent(Button);
+        let move_up_sprite = move_up.getComponent(Sprite);
         let page_index_label = page_index.getComponent(Label);
 
         previous_page_button.interactable = (this.current_page > 1) ? true : false;
         next_page_button.interactable = (this.current_page < this.total_page) ? true : false;
+        move_up_sprite.grayscale = (this.current_page == 1) ? true : false;
         page_index_label.string = this.current_page + ' / ' + this.total_page;
 
         for (let i = 1; i <= this.levels_per_page; i++) {
@@ -103,47 +103,16 @@ export class CustomedLevelSelect extends Component {
         director.loadScene('CustomedLevel');
     }
 
-    async rename(event, customEventData) {
+    moveUp(event, customEventData) {
         let button_index = Number(event.target.parent.name.slice(5, event.target.name.length));
         let level_index = (this.current_page - 1) * this.levels_per_page + button_index - 1;
 
-        if (typeof wx == 'undefined') {
-            console.log('非微信环境');
+        if (level_index == 0) return;
 
-            let new_name = '新关卡';
-            this.level_info_array[level_index].name = new_name;
-            sys.localStorage.setItem('CustomedLevelData', JSON.stringify(this.level_info_array));
-
-            this.onLoad();
-            this.start();
-
-            return null;  // 如果不是微信环境，直接返回 null
-        }
-
-        try {
-            const new_name = await showWechatInputName();
-            if (new_name !== null) {
-                this.level_info_array[level_index].name = (new_name.length == 0) ? '自定义关卡' : new_name;
-                sys.localStorage.setItem('CustomedLevelData', JSON.stringify(this.level_info_array));
-
-                this.onLoad();
-                this.start();
-                wx.showToast({
-                    title: '重命名成功',
-                    icon: 'success'
-                });
-            }
-            else {
-                console.log('用户取消了输入');
-            }
-        }
-        catch (error) {
-            console.error('输入过程出错:', error);
-            wx.showToast({
-                title: '输入失败',
-                icon: 'error'
-            });
-        }
+        moveUpLevel(level_index);
+        CurrentLevel[1] = level_index;
+        this.onLoad();
+        this.start();
     }
 
     async deleteLevel(event, customEventData) {
@@ -154,50 +123,40 @@ export class CustomedLevelSelect extends Component {
         let button_index = Number(event.target.parent.name.slice(5, event.target.name.length));
         let level_index = (this.current_page - 1) * this.levels_per_page + button_index - 1;
 
-        DeleteLevel(level_index);
+        deleteLevel(level_index);
         CurrentLevel[1] = level_index;
         this.onLoad();
         this.start();
     }
 
     async importLevel() {
-        if (typeof wx == 'undefined') {
-            console.log('非微信环境');
-
-            let name = '测试关卡';
-            let code = 'B0f0P7mQ11248192R7l0n0V6l-n8l-n';
-            SaveLevel(name, code, 0, false);
-
-            CurrentLevel[1] = this.total_levels + 1;
-            this.onLoad();
-            this.start();
-
-            return null;  // 如果不是微信环境，直接返回 null
-        }
-
         try {
-            const code = await showWechatInputCode();
-            if (code !== null) {
-                let success = SaveLevel('自定义关卡', code, 0, false);
+            let code = await showWechatInputCode();
+            if (code === null) {
+                console.log('用户取消了输入');
+                return;
+            }
 
-                if (success) {
-                    CurrentLevel[1] = this.total_levels + 1;
-                    this.onLoad();
-                    this.start();
+            let success = saveLevel('自定义关卡', code, 0, false);
+            if (success) {
+                CurrentLevel[1] = this.total_levels + 1;
+                this.onLoad();
+                this.start();
+
+                if (typeof wx != 'undefined') {
                     wx.showToast({
                         title: '保存成功',
                         icon: 'success'
                     });
                 }
-                else {
+            }
+            else {
+                if (typeof wx != 'undefined') {
                     wx.showToast({
                         title: '存档已满，无法保存',
                         icon: 'error'
                     });
                 }
-            }
-            else {
-                console.log('用户取消了输入');
             }
         }
         catch (error) {
@@ -213,38 +172,6 @@ export class CustomedLevelSelect extends Component {
         CurrentLevel[1] = 0;
         director.loadScene('FirstPage');
     }
-
-    // async showWechatInputCode(): Promise<string | null> {
-    //     let title = '请输入关卡代码';
-    //     let content = '';
-    //     let placeholder = '请输入...';
-    //     let confirmText = '确定';
-    //     let cancelText = '取消';
-
-    //     return new Promise((resolve) => {
-    //         wx.showModal({
-    //         title,
-    //         editable: true,
-    //         content,
-    //         placeholderText: placeholder,
-    //         confirmText,
-    //         cancelText,
-    //         success: (res: { confirm: any; content: any; }) => {
-    //             if (res.confirm) {
-    //             // 用户点击确定，返回输入的内容
-    //             resolve(res.content || '');
-    //             } else {
-    //             // 用户取消输入
-    //             resolve(null);
-    //             }
-    //         },
-    //         fail: () => {
-    //             // 调用失败时也返回null
-    //             resolve(null);
-    //         }
-    //         });
-    //     });
-    // }
 
     update(deltaTime: number) {
         

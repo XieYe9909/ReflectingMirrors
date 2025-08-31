@@ -1,6 +1,6 @@
 import { sys } from 'cc';
 import { MirrorState } from './Mirror';
-import { generateLocate } from './utils';
+import { generateLocate } from './Utils';
 
 const MAX_SAVED_LEVEL = 25;
 
@@ -23,7 +23,7 @@ export class LevelInfo {
     }
 }
 
-export function SaveLevel(name: string, code: string, mirror_num: number, isPassed: boolean): boolean {
+export function saveLevel(name: string, code: string, mirror_num: number, isPassed: boolean): boolean {
     let new_info = new LevelInfo(name, code, mirror_num, isPassed);
     let data = sys.localStorage.getItem('CustomedLevelData');
     let level_info_array = data ? JSON.parse(data) : [];
@@ -44,19 +44,36 @@ export function SaveLevel(name: string, code: string, mirror_num: number, isPass
     }
 }
 
-export function DeleteLevel(index: number) {
+export function deleteLevel(index: number) {
     let data = sys.localStorage.getItem('CustomedLevelData');
     let level_info_array = data ? JSON.parse(data) : [];
 
     if (level_info_array == null || level_info_array.length == 0) {
         return;
     }
-    else {
-        level_info_array.splice(index, 1);
-        let new_length = level_info_array.length;
-        for (let i = index; i < new_length; i++) {
-            level_info_array[i].index = i;
-        }
-        sys.localStorage.setItem('CustomedLevelData', JSON.stringify(level_info_array));
+
+    level_info_array.splice(index, 1);
+    let new_length = level_info_array.length;
+    for (let i = index; i < new_length; i++) {
+        level_info_array[i].index = i;
     }
+    sys.localStorage.setItem('CustomedLevelData', JSON.stringify(level_info_array));
+}
+
+export function moveUpLevel(index: number) {
+    let data = sys.localStorage.getItem('CustomedLevelData');
+    let level_info_array = data ? JSON.parse(data) : [];
+
+    if (level_info_array == null || level_info_array.length == 0 || index == 0) {
+        return;
+    }
+
+    let temp = level_info_array[index - 1];
+    level_info_array[index - 1] = level_info_array[index];
+    level_info_array[index] = temp;
+
+    level_info_array[index - 1].index = index - 1;
+    level_info_array[index].index = index;
+
+    sys.localStorage.setItem('CustomedLevelData', JSON.stringify(level_info_array));
 }

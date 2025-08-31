@@ -4,7 +4,7 @@ import { Flower } from './Flower';
 import { Type } from './Prefab';
 import { matrix1 } from './Square';
 import { MapInfo } from './MapInfo';
-import { getIndexByID } from './utils';
+import { getIndexByID } from './Utils';
 const { ccclass, property } = _decorator;
 
 @ccclass('Item')

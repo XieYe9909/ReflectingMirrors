@@ -2,13 +2,11 @@ import { _decorator, director, Label, Node, sys } from 'cc';
 import { MainTheme } from './MainTheme';
 import { ClearMatrix } from './Square';
 import { CurrentLevel } from './FirstPage';
-import { LevelInfo, DeleteLevel } from './Storage';
+import { LevelInfo } from './Storage';
 import { Mirror, MirrorState } from './Mirror';
-import { generateLocate, showUserConfirm } from './utils';
+import { generateLocate, showWechatInputName, showUserConfirm, copy2Clipboard } from './Utils';
 import { matrix1, matrix2 } from './Square';
 const { ccclass, property } = _decorator;
-
-declare const wx: any;
 
 @ccclass('MyLevel')
 export class MyLevel extends MainTheme {
@@ -129,24 +127,39 @@ export class MyLevel extends MainTheme {
         this.changeMirror();
     }
 
+    async rename() {
+        if(!this.level_flag) return;
+
+        try {
+            let new_name = await showWechatInputName(this.level_index);
+            if (new_name === null) {
+                console.log('用户取消了输入');
+                return;
+            }
+
+            this.level_name = (new_name.length == 0) ? '自定义关卡' : new_name;
+            this.level_info.name = this.level_name;
+            this.node.getChildByName('LevelName').getComponent(Label).string = (this.level_index + 1) + ' ' + this.level_name;
+
+            if (typeof wx != 'undefined') {
+                wx.showToast({
+                    title: '重命名成功',
+                    icon: 'success'
+                });
+            }
+        }
+        catch (error) {
+            console.error('输入过程出错:', error);
+            wx.showToast({
+                title: '输入失败',
+                icon: 'error'
+            });
+        }
+    }
+
     exportCode() {
         let code = this.level_code;
-
-        if (typeof wx !== 'undefined') {
-            console.log("Copying to clipboard...");
-            wx.setClipboardData({
-                data: code},
-            ).then(() => {
-                wx.showToast({
-                  title: '已复制关卡代码到剪贴板',
-                })
-            }).catch(err => {
-              console.error('复制失败', err)
-            })
-        }
-        else {
-            console.log(code);
-        }
+        copy2Clipboard(code);
     }
 
     updateMirrorJson(node: Node): void {

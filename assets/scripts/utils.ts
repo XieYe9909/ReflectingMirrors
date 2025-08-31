@@ -1,8 +1,5 @@
 import { Node } from "cc";
 
-// 声明 wx 变量以避免找不到名称错误
-declare const wx: any;
-
 export function getIndexByID(targetNode: Node, array: Node[]): number {
     return array.findIndex(arrayNode => arrayNode.uuid === targetNode.uuid);
 }
@@ -20,13 +17,18 @@ export function generateLocate(i: number): number[] {
     return [x, y];
 }
 
-export async function showWechatInputName(): Promise<string | null> {
-    let title = '自定义关卡名 (15 字符以内）';
+export async function showWechatInputName(level_index: number=0): Promise<string | null> {
+    if (typeof wx === 'undefined') {
+        console.log('非微信环境');
+        return '新关卡' + (level_index + 1);
+    }
+
+    let title = '自定义关卡名 (10 字符以内）';
     let content = '';
     let placeholder = '请输入...';
     let confirmText = '确定';
     let cancelText = '取消';
-    const MAX_LENGTH = 15;
+    const MAX_LENGTH = 10;
 
     return new Promise((resolve) => {
         wx.showModal({
@@ -63,6 +65,11 @@ export async function showWechatInputName(): Promise<string | null> {
 }
 
 export async function showWechatInputCode(): Promise<string | null> {
+    if (typeof wx === 'undefined') {
+        console.log('非微信环境');
+        return 'B0f0P7mQ11248192R7l0n0V6l-n8l-n';
+    }
+
     let title = '请输入关卡代码';
     let content = '';
     let placeholder = '请输入...';
@@ -94,9 +101,13 @@ export async function showWechatInputCode(): Promise<string | null> {
     });
 }
 
-export async function showUserConfirm(message: string, confirmText = "确定", cancelText = '取消', non_wx_default = true): Promise<boolean | null> {
-    let title = '操作确认';
+export async function showUserConfirm(message: string, confirmText='确定', cancelText ='取消', non_wx_default=true): Promise<boolean | null> {
+    if (typeof wx === 'undefined') {
+        console.log('非微信环境');
+        return true;
+    }
 
+    let title = '操作确认';
     return new Promise((resolve) => {
         wx.showModal({
         title,
@@ -118,4 +129,21 @@ export async function showUserConfirm(message: string, confirmText = "确定", c
         }
         });
     });
+}
+
+export function copy2Clipboard(data: string) {
+    if (typeof wx == 'undefined') {
+        console.log('非微信环境');
+        return;
+    }
+
+    wx.setClipboardData({
+        data: data},
+    ).then(() => {
+        wx.showToast({
+            title: '已复制关卡代码到剪贴板',
+        })
+    }).catch(err => {
+        console.error('复制失败', err)
+    })
 }

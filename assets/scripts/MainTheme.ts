@@ -9,7 +9,7 @@ import { MirrorState, Mirror } from './Mirror';
 import { MapInfo } from './MapInfo';
 import { Flower } from './Flower';
 import { MainThemeInterface } from './MainThemeInterface';
-import { generateLocate, showUserConfirm } from './utils';
+import { generateLocate, showUserConfirm } from './Utils';
 const { ccclass } = _decorator;
 
 function Char2Num(str: string): number {
@@ -645,10 +645,8 @@ export class MainTheme extends Component implements MainThemeInterface {
         if(!this.level_flag) return;
         let confirm = await showUserConfirm('确定重置关卡？');
         if (!confirm) {
-            console.log('取消重置');
             return;
         }
-        console.log('确认重置');
 
         let level_name = 'Level' + (this.level_index + 1);
         let MS_array = JSON.parse(sys.localStorage.getItem(level_name));
