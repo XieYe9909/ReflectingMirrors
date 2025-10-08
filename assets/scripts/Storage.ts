@@ -2,7 +2,7 @@ import { sys } from 'cc';
 import { MirrorState } from './Mirror';
 import { generateLocate } from './Utils';
 
-const MAX_SAVED_LEVEL = 25;
+const MAX_SAVED_LEVEL = 500;
 
 export class LevelInfo {
     index: number = 0;
