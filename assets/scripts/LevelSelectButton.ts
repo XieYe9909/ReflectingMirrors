@@ -47,7 +47,7 @@ export class LevelSelectButton extends Component {
     }
 
     Select() {
-        CurrentLevel[0] = this.index + 1;
+        CurrentLevel[0] = this.index;
         director.loadScene('Level');
     }
 }

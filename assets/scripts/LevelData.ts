@@ -301,7 +301,7 @@ let extralevelData: LevelData[] = [
     new LevelData('牢房', 3, 'H0m0I3ko5ko7ko9koJ2oK6kMamO6oQ223281R1m22l0n04l0n06l0n08l0n0al0n0V0ln1j-ln-p2jp3jp4jp5jp6jp7jp8jp9jpajpbj-p',
         '广告位招租', 
         '过关！'),
-    new LevelData('青红之争1', 2, 'H1p0L6km8moM5ko9koP8rQ2781',
+    new LevelData('球', 2, 'H1p0L6km8moM5ko9koP8rQ2781',
         '广告位招租', 
         '过关！'),
     new LevelData('房间混战2', 2, 'Eef2I7kpbkpetJ9pL5jk8o9oaocpM9kakeoN6mn8kbnOclmPeh-jQ12233391V4i-q5iq6iq7iq8iq9iqaiqbiqciqdf-ko-t',

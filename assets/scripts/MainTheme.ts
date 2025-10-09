@@ -161,7 +161,7 @@ export class MainTheme extends Component implements MainThemeInterface {
         ClearMatrix();
         this.initLightPiece();
 
-        this.level_index = CurrentLevel[0] - 1;
+        this.level_index = CurrentLevel[0];
         this.level_name = levelData[this.level_index].name;
         this.level_code = levelData[this.level_index].code;
         this.level_difficulty = levelData[this.level_index].diff;
