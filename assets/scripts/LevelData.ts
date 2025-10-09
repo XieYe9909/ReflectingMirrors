@@ -1,501 +1,405 @@
-export let TotalLevel = 100;
-export let CurrentTotalLevel = 75;
-export let Level = new Array<string>(TotalLevel);
-export let Name = new Array<string>(TotalLevel);
-export let Diff = new Array<number>(TotalLevel);
-export let Des = new Array<string>(TotalLevel);
-export let Suc = new Array<string>(TotalLevel);
+export let TotalLevelSize = 1000;
+export let ExtraLevelStart = 500;
 
-for(let i=0; i<TotalLevel; i++) {
-    Level[i] = null;
-    Name[i] = null;
-    Diff[i] = 0;
-    Des[i] = null;
-    Suc[i] = null;
+class LevelData {
+    name: string;
+    diff: number;
+    code: string;
+    des: string;
+    suc: string;
+    constructor(name: string, diff: number, code: string, des: string, suc: string) {
+        this.name = name;
+        this.diff = diff;
+        this.code = code;
+        this.des = des;
+        this.suc = suc;
+    }
 }
 
-// Level[0] = 'L0704F7d4M11';
-// Level[1] = 'L0604e841F551884M13';
-// Level[2] = 'Le34430120b71F7a6765983M13';
-// Level[3] = 'L0602F9b26328a26924a2M33';
-// Level[4] = 'L08040602Fd76726M1231';
-// Level[5] = 'L2504c942F284534b54592842a82M1133';
-// Level[6] = 'L3e64ae61F4a17c1554bb4M23';
-// Level[7] = 'L3c63F483263363273473383M112131';
-// Level[8] = 'L0022F232692cb2c12M132132G1e11d11c11b11a11911811711611511411311211114e14d14c14b14a1491481471461451441101431421411401ae1ad1ac1ab1aa1a91a81a71a61a51a41a31a21a11a01de1dd1dc1db1da1d91d81d71d61d51d41d31d21d11d01';
-// Level[9] = 'L0d04Fcd4dc4b14704154294794a64554M112iS0b11b12b13b14b15b16b17b18b19b1ab1bb1ba1b91b81b71b61b51b41b31a21b21921821721621521421321221231241251261271281381481581681781881871861851841741641541441451461561661';
-// Level[10] = 'L1704d642F4c4ac2M1321S3d14d15d16d17d18d19d1ad1bd13c15c16c17c18c19c1bc13b14b16b17b18b1ab1bb13a14a15a17a19a1aa1ba1391491591691891991a91b91';
-// Level[11] = 'L1604d841F7c44a4aa4721441a41775M34';
-// Level[12] = 'Le144ed41F941c512917a4864544M2732S0b11b13b14b15b16b17b18b19b1ab1bb1db1a71d71b71e71b31d31e31c31a31931731531431331031131571471371271071171eb1771cb1871831631671971';
-// Level[13] = 'L0804e6426e618027F864881682667M1522';
-// Level[14] = 'L0707F2a4b71342955cc6aa3777M2532415161G472a72872672';
-// Level[15] = 'L7e64e74270210707F974571477a77877677772M1723S6918419418519a18a18916415416515a16a1';
-// Level[16] = 'L7027F8a4571a62461371481994aa49b4a42b52952M1435415161';
-// Level[17] = 'L0a07F004e01702M2181';
-// Level[18] = 'L7e67F404a017027676c7887M142181S0e11e12e13e14e15e16e18e19e1ae1be1ce1de1ee1ed1dd1cd1bd1ad19d18d16d15d14d13d12d11d10d10d11b11a11911811711511411311113b14b16b1691591491391371471671661651451351301311321331431531521421411501601611631831931a31b31b21b11b01a11921a21811801901851861871a51b51a71b71891991a91b918b19b1bb1db1da1d91d81d71d51d41d31d11d11';
-// Level[19] = 'L3424b421Fb34331M112182S2212312412512612712812912a12b12c13c14c15c16c17c18c19c1ac1bc1cc1cb1ca1c91c81c71c61c51c41c31c21b21a219218217216215214213214314514714914b16b16916716516318b1891871851831a31a51a71a91ab1ab1';
-// Level[20] = 'Ld134ee520d01F882117M112681S0110011212111012313215314313412010216317313513613716617816918719619a1a91bb1bd1be1ce1de1db1eb1ec1ed1ad19d18d1da1d91d81';
-// Level[21] = 'L1607d847F0942e37e3c04M122281S5e15c15a15815615415215019e19c19a1981961941921901';
-// Level[22] = 'Le94470220211F5b74979b77c7M12243281G7847a06a18858966926838a7S5814815a13b13a13812812912a13c14c15c18b16b16c1ab19a1aa1bc1ad19d18d17d1bd16d15d14d13d12d11d10d10e11e12e13e14e15e16e17e18e19e1ae1be1bb1ba1981a81b81b71b61871861851951a516716616515514513713612c11c10c11b12b11a1';
-// Level[23] = 'L0707F784661672777872764881e77M132482S3e13d13c13b13a1391381361351341331321311301be1bd1bc1bb1ba1b91b81b61b51b41b31b21b11b01';
-// Level[24] = 'L70227e61F9516129426e29116914a18b1M112882G7607807a0630842492S671681581481381281181081071061161261361461561661571471371271171881981a81b81c81d81e81e71e61d61c61c71d71b71b61a61a71971871861961';
-// Level[25] = 'L0304F574791752974M1493';
-// Level[26] = 'L0704F7745b1852464524ba27c24911a1M152293';
-// Level[27] = 'L6e61Fe64685476753M112a92G3203403602603904903a04c06907907a0760540620920b40b50a60980ba02b02a12712314615516417217e17d17c18a1841a41a21a81c91cb1c71d71e71c414b25b28b2ab2ac28c29a2ca2a92c825a2582572872242432422822a32c325e35d35c33c3283253453633523853863963943c53d53e53b83aa3bc39c3893292593b23';
-// Level[28] = 'L0704F755976793577M133191';
-// Level[29] = 'L0e74F554991b353b6726M22318291';
-// Level[30] = 'L7e647022F7c4772724M1124S781472791691891991a91b91c91d91e91761751851651551451351251151051a72';
-// Level[31] = 'L7022e741F7413623528729727516b15b15b1M1722S3323723b27b2772732b32b72bb2';
-// Level[32] = 'L0707Fb74731a42c70b30720M2281G881661683S3b13a13913813613513413313213113014b15b16b18b19b1ab1bb1cb1db1eb1';
-// Level[33] = 'L0701F111d00351dd1100520630560810d705806908909a0a701a00b01e03c09e07c0bc0db0d90M1534S0e15520d10c10a10910810610510410310210110012e12c12a1291281381481261251241441451461361221321421201301401601701801901a01b01c01e11e21e01501c21c31c41a21a41a51a61861851841821621641651661681881981a81c61c71c81d81e81e71e61e51e41e31ca1da1ea1e91eb1ec1dc1cc1ae1be1ce1de1ee1ed18e17e16e15e14e13e14c15c16c18c1ac1aa18a17a16a14a1592992952922';
-// Level[34] = 'L1d07F0a00930b00c00d00e01e02e03e04e05e06e07e08e09e0ae0be0ce0de0ee0ed0ec0eb0ea0e90e80e70e60e50e40e30e20e10e00d00c00b00a009008007006005004003002001000000100200300400500600700801a0180M2481';
-// Level[35] = 'L2c04F3b45912723804a5556563294352M112792';
-// Level[36] = 'Le7450703F755773795M24a3S6a16916816716616516416b16318b18a1891881871861851841831831';
-// Level[37] = 'L7e64F1041240742e4bd4b84c34c14M1627a6S4e14d14c14b14a13a12a11a10a14914814714614513512511510514414314214115516518515a16a18a19a19b19c1ac1ad19e1951941931a31a21911991981971961aa1ba1ca1da1ea1a51b51c51d51e51901';
-// Level[38] = 'L010402020301040407040a0420240d04050208020b020e023022060109010c01102140217021a021d02150248024b024e024e02460229022c022F144421622bc0e658e61e34e3ae3ee6b56376dd5565944b742a4ea4751db1912d226725823d24b29a29c2Mad';
-// Level[39] = 'L7744F3452863a33972762665b76c78c79b7b97c87c67b579378276275373577c5c757254b3ab3ba3b43a33433M1a213191';
-// Level[40] = 'Lc344cb41F794571595754971995955555M27S2c13c14c15c16c17c18c19c1ac1bc1cc1ca1c91c81c71c61c51c41c21b21a219218217216215214213212212312412512612712812912a12b14915a16915815614515416518919a1a91981961851941a51';
-// Level[41] = 'L7027F362777ec2M123181';
-// Level[42] = 'L2704c741F3d4b11775694894e74b94b54851651351391071M1528S1911811711611513a15a16c18c19a1ba1d91d81d71d61d51b41941821621541341011101501601701801901d01e11ed1de19e18e17e16e15e11e10d1';
-// Level[43] = 'L07047e61e7477022F5b4671c52a608869a78928618565a7M1327S4814914a14b14c15c16c18c19c1ac1bc1cc1cb1ca1c91c81c61c41b41a41941841641541441451461';
-// Level[44] = 'Lee440001F770896653976856573693M143292';
-// Level[45] = 'L6824880266428664F6740028b41d4d44d045427e29020c2M122433S8e17b11b10a1da1a41031';
-// Level[46] = 'L080407020601Fe849b19922658a6373487663865b95ba56a5786M1425';
-// Level[47] = 'L0004ee42F4545424705707707907a0750740970a705546548549548746747844945946948949945625825a29a2a92762962982a52942M1i25S1821624824626826628628826a28a26d28d2642842612812a62a82d62d82';
-// Level[48] = 'L0a07F763717753673573783793873973813777613513913M112682';
-// Level[49] = 'Ldd54F424391972644854934a82ba25822a16a17c1M152395';
-// Level[50] = 'L7e64F774cc1222M1191b1';
-// Level[51] = 'L7e61F763496474584944452431M112193b1';
-// Level[52] = 'L0701F5149d49115d17127d2M1493b1S5c17c16c18c19c1521621721821921';
-// Level[53] = 'L7e64F034e71e92094e54eb4e320720510b1M1594b1';
-// Level[54] = 'L7d64F0d1102012de2ed21e1d01e11M1492b1';
-// Level[55] = 'Le747F4241427d7M118191b1S5e16e16d16c15c15b19e18e18d18c19c19b1be1cd1ce1dd1de1ed1dc1ec1eb1e31e21e11c11d01c01b01d21d110110210311211111012112013015016016116215215318218118019019219318518619619516615615516516815815916918919919818813e12e11e11d10d12d11c10c10b1091081061051e51e61e81e91c91b91b81c61c51b51351361251281291391391';
-// Level[56] = 'Le4440a02F7c1922070170270370470570670770870970a70b70c70d70e70a22ac2bc28c1M162291b1S222522822b22cc29c26c23c2';
-// Level[57] = 'L7e64Fdd42c11d2732cc1b31334M1892b1S3b2bb26e15e16d18d18e19e1';
-// Level[58] = 'L7e61Fe740b1b024653035718659b5bb5M162392b1S7727324a2aa2';
-// Level[59] = 'L7702Fa94454491a51475M95b5';
-// Level[60] = 'L0017F3d17d55d69d3M11218197b1G4d26d28d2S3c14c15c16c17c18c19c1';
-// Level[61] = 'L0e610002ee44e027F791781871971594684884994572672762752557667867957M1522S774';
-// Level[62] = 'Lc543F0e3003ee3e03M112531S7741e10d1031121211301c11c21d21b11a11911d31d41d51';
-// Level[63] = 'L2c06F4b65b66b67b68b64a65a66a67a68a6596696796486586686786886476576676776876M1424S494894';
-// Level[64] = 'L0e64F7e08d09c0ab0ba0c90d80e70d60c50b40a309208107006105204303402501600701802903a04b05c06d06c47c48c4364664574634934954aa4c34M1627S3b27b2bb2372b72332732b327742e14e16e18e1ae1ce1ee12c14c1ac1cc1ec10a12a1ca1ea1081e81061e61041241c41e41021221421a21c21e21001201401601801a01c01e01';
-// Level[65] = 'L7027F361882653a975b7M238191b1S1e10d10b11b13b13d13e1391191081371351151061be1bd1de1ed1db1eb1bb1b91b71b51d51e61e81d91d31e31b31331131031031311301101011b11b01d01e11';
-// Level[66] = 'L7e67F584854b92be28859a35b7M138191b1';
-// Level[67] = 'L6c64F5a4a213c2a54624a91M11228192b1';
-// Level[68] = 'L0507e547Fed17c27e57a60d6M14218192b1G0900a01a01900b00c05a05909a0990da0d90e90ea0eb0ec04913d22a13914c13c14d25d26e25e24e23e22e28e29e2ae2be2ce29d2ad2bd2a93b93ca3ac3bc35c39c17b0790S6c16b16a16918c18b18a18914a1291aa1c91';
-// Level[69] = 'L7e67F914aa1621d92645376a634a7M112241516192b1';
-// Level[70] = 'L3b02F792d75976673b77b63ba51b53d6M1793b1';
-// Level[71] = 'L0704F374774484684884a84464664864a647915b19b16a58a5752532932646846M172691b1S594994554954';
-// Level[72] = 'L7a64Fc01e02M1c8193b1Gb42d02Se11d11c11b11a119118117116115114113112111111211311411511611711811911a11b11c11d12d13d14d15d16d17d18d19d1ad1bd1cd1dd1dc1db1da1d91d81d71d61d51d41d31c31b31a319318317316315314313313413513613713813913a13b14b15b16b17b18b19b1ab1bb1ba1b91b81b71b61b51';
-// Level[73] = 'L2a71F464681a563934876645a4871M13238192b1';
-// Level[74] = 'Lee64F1a40627a1674875754532634a73b83b62e76M1792b1Sb74';
-// Level[75] = 'L0701F434cb1841892862452475c95293677M142493b1Gca0783850381440';
-// Level[76] = 'L0024F494675866743267a372439a67b5M15218193b1';
-// Level[77] = 'L7e67F3d5bd1397356b55314b12M1392b1f1h1';
-// Level[78] = 'L7027F7e7M8794S0e10d10c10b10a1091081071061051041031021011001101201301401501601801901a01b01c01d01e01e11e21e31e41e51e61e71e81e91ea1eb1ec1ed1ee1de1ce1be1ae19e18e16e15e14e13e12e11e12c12912a1281261251241221441461661861771c21a41c31c41c61a61ab1c81a81c71ca1cc1aa1ac18c18a18816816a16c14c14a1471481';
-// Level[79] = 'L1d01F7907807706705708709707607507111717d14c1ac1d71c41241424ca4a222a23b6bb3b33335M2893a8S7e17c17b17a1071271371471a71b71c71e71741731721701';
+let basiclevelData: LevelData[] = [
+    // 关卡1~5
+    new LevelData('开始', 1, 'E0m0M7sQ11',
+        '游戏方法：拖动棋盘下方的直角镜到光路上，点击镜子使其旋转，让光线照亮花朵。\n        直角镜：对于特定角度的入射光线，可以使其原路返回或者发生90度的偏转。要注意直角镜只有一个面能反射光线哦。', 
+        '是不是觉得太简单了？（滑稽）'),
+    new LevelData('单色', 1, 'Ben4E0l0J5kM8nQ13', 
+        '为什么红花无法被照亮？难道有BUG？实际上，每种颜色的花朵只能被相同颜色的光照亮。其他颜色的光通过花朵会导致其无法被照亮。', 
+        '原来只需要让蓝光绕过红花就可以了。'),
+    new LevelData('复色', 1, 'B0q7C3f1Eei4L9nN7lO7pQ13', 
+        '为什么没有和花朵颜色相同的光线？原来多束单色光可以合成复色光，照亮复色花朵。黄=红+绿，青=绿+蓝，紫=红+蓝。你学会了吗？', 
+        '看来你已经完全学会了。'),
+    new LevelData('分光镜', 2, 'C0l0K4p6io8p9qQ33', 
+        '分光镜：对于特定角度的入射光线，既可以让其通过，又可以像直角镜一样反射光线，因此能将光线一分为二。', 
+        '看来难度二星的关卡也就不过如此嘛！'),
+    new LevelData('分光镜的魔法', 2, 'C0l0E0n0O7hdmQ1231', 
+        '只有三面镜子，怎么感觉不太够用呢？', 
+        '分光镜不但能分光，还能合光。'),
+    
+    // 关卡6~10
+    new LevelData('夏日池塘', 2, 'Cco4E2k0K5o8janM2n5ibkQ1133', 
+        '自从引入了分光镜，有没有感觉关卡的难度一下子增加了？想通过这一关，要充分发挥分光镜的作用哦。', 
+        '相信你对分光镜的理解又加深了一层。'),
+    new LevelData('斜角镜', 1, 'Bat6E3t6J4p7rM5kbqQ23', 
+        '斜角镜：对于特定角度的入射光线，可以使其发生45度或者135度的偏转。\n        从外观上看，斜角镜比直角镜多了个小把手，有没有感觉到它更好用呢？', 
+        'So easy.'),
+    new LevelData('一气化三"青"', 2, 'D3r6L2lm3ln4mnQ112131', 
+        '只有三面镜子，真的能点亮这么多的花朵吗？再仔细看看，这些花朵的位置是不是很有规律呢？', 
+        '等等，先别着急去下一关，想想看。这一关的光路你真的看懂了吗？'),
+    new LevelData('光栅', 2, 'C0f2K2i6ocgqQ132132R1f1g1h1i1j1k1l1m1n1o1p1q1r1s1t54f1g1h1i1j1k1l1m1n1o1p1q1r1s1t1af1g1h1i1j1k1l1m1n1o1p1q1r1s1t1df1g1h5i1j1k1l1m1n1o5p1q1r1s1t1', 
+        '光栅：只能让和光栅角度相同的入射光线通过，会阻挡其他角度的入射光线。\n        光栅不能移动和旋转，注意别和分光镜混淆了哦。', 
+        '怎么样，是不是费了一番劲呢？如果你独立完成了前九关，那你真的很棒棒啦，有没有被自己的聪明才智折服呢？'),
+    new LevelData('曲径通幽', 2, 'E0s0M1k2o5k7foalbgcsdrQ112iV0q1q2h-nq3hnq4hj-lnq5hjlnq6hjlnq7hjnq8hj-nq9hqahqbh-q', 
+        '哇！头一次见到这么多镜子。不过怎么感觉还是不太够用呢？注意直角镜只有一面，要把它用在合适的地方。\n        障碍物：能阻止所有方向的光线通过。', 
+        '看来在狭小的地方，直角镜还是不能被两面斜角镜替代的。'),
+    
+    // 关卡11~15
+    new LevelData('各就各位', 2, 'Cdl4E1m0KarM4rQ1321V3o-s4o-qs5oprs6oq-s7p-s8oq-s9oprsao-qsbo-s', 
+        '"只有一面斜角镜，怎么可能让两束光都发生45度的偏转，你这关保过吗？"\n        "我出关的，能让关过不去？要是过不去，我自己吃了它，满意了吧？"', 
+        '原来一面斜角镜还可以被重复使用。记住这一点，以后会经常用到的哦。'),
+    new LevelData('双剑合璧', 2, 'Bdn4E1l0J4j7hajM4p7rapN7mQ34', 
+        '是不是感觉这一关似曾相识？如果没有思路的话，建议复习一下第6关。', 
+        '如此对称的图案，是不是还想再多看一眼？怎么样，有没有感受到这款游戏的魅力？'),
+    new LevelData('双蛇出洞', 2, 'Bes4Eeg4J2o9jckM5j7p8lQ2732V0imq1imq2m3imq4imq5imq6imq7imq8imq9imqaimqbimqciqdimqeimq', 
+        '是不是感觉没有头绪？不要怕，你经历了那么多关卡的磨练，这一关一定难不倒你。', 
+        '哈哈哈，是不是想说：就这？'),
+    new LevelData('四色纠缠', 3, 'B6t6Cel4E0n0H8f2J8nK6nM8lP6lQ1522', 
+        '白光是三色光的总合。那么很显然，当白花被照亮时，其他任何颜色的光通过都不会影响到它。', 
+        '这关的解法不止一种哦。'),
+    new LevelData('白生六色', 3, 'H0m0JbmK3jLapM2pN9kOcrP7mQ2532415161R4m26m28m2am2', 
+        '滤光镜：顾名思义，能过滤光的镜子。对于垂直入射的光线，只有与滤光镜颜色相同的光分量才能通过滤光镜，其他颜色的光分量会被其阻挡。', 
+        '原来白花不止能被白光照亮，红绿蓝三束单色光的叠加也能照亮它。有没有感觉这一关设计精妙呢？'),
+    
+    // 关卡16~20
+    new LevelData('一波三折', 3, 'B7f2Cem4E7t6H0m0J5mK7mM9mP4m6m8mamQ1723V5jp6jkop8jkop9jp', 
+        '这些花朵的排列是不是很令人恼火？冷静冷静，玩游戏也要有耐心。', 
+        '这一关中的斜角镜同样需要重复使用哦。'),
+    new LevelData('花团锦簇', 2, 'H7f2J3m4ln5mK9kajlbkM8p9oqapQ1435415161', 
+        '三种颜色的花团，都等着你来点亮。', 
+        '透过分光镜的光线经过直角镜原路反射回去之后，还能再被分出一束光，这个规律你是不是早就发现了呢？'),
+    new LevelData('三棱镜', 1, 'H0p0JefK7fM0fQ2181', 
+        '三棱镜：对于与三棱镜长边夹角22.5度的入射光线，经过三棱镜后发生的角度偏折与其颜色有关。红光直线通过，绿光偏转45度，蓝光偏转90度。因此一束白光会被三棱镜分出三束单色光，你学会了吗？', 
+        '有了三棱镜，又可以解锁很多新玩法了，有没有很期待呢？'),
+    new LevelData('迷宫', 3, 'H7t6JafK7fM4fP6r7l8nQ142181V0st1gi-km-qst2st3f-ikmoqst4g-ikmoqst5fhiost6fgik-moqst8fgik-moqst9fhioqstag-ikmostbf-ikmoqstcstdgi-km-qstest', 
+        '身经百战的有没有被这一关难倒呢？有时候正向思考遇到困境时，不妨试着从逆向思考，说不定就会有新灵感。', 
+        '怎么样，逆向思考有没有帮助到你解谜呢？'),
+    new LevelData('密室', 3, 'Bbj2E3j2J3iMbiQ112182V2h-r3hr4hikmoqr5hr6hikmoqr7hr8hikmoqr9hrahikmoqrbhrch-r', 
+        '目标花朵都在对方的身下，这要怎样才能让光线对号入座呢？三棱镜在这一关中到底应该起到什么作用？', 
+        '先合光，再分光，是不是很巧妙呢？根据光路的可逆性，你找到三棱镜合光的规律了吗？'),
+    
+    // 关卡21~25
+    new LevelData('深入虎穴', 3, 'B0s0Cet5Edg3K8nP1gQ112681V0f-h1fh2fgi3hj-m4i5i6ilo7in8ms9lpsaosbqstctdn-qteq-s', 
+        '白花深处幽径，要怎样才能点亮它呢？要注意红光不会被三棱镜改变方向，这一点有没有给你一些启发？', 
+        '看来你已经完全掌握用三棱镜合成复色光了。'),
+    new LevelData('青红皂白', 4, 'H1l0dn4L2t7tM0ocfQ122281V5fhjlnprt9fhjlnprt', 
+        '有没有觉得难度陡升？仔细观察花朵的排列，其实这一关也没有那么难。', 
+        '原来除了斜角镜，三棱镜也一样可以被重复使用。'),
+    new LevelData('不可能的任务', 5, 'B0h1C7f2Eeo4P4o5q7r9qQ12243281R6n3o2p17n0p08n1o2p3V0r-t1p-t2n-t3l-np-t4knr-t5knpr-t6k-mq-t7st8k-mqst9knpstaknpqstbl-np-t', 
+        '三束单色光，要在如此狭窄的地方照亮四朵白花，这河里吗？', 
+        '你真是个小天才！'),
+    new LevelData('分久必合，合久必分', 3, 'H0m0J6l8nK6m8mM7lnP7memQ132482V3f-ln-tbf-ln-t', 
+        '倒数第二关了，加把劲！这关不难，相信你很快就能领会标题的含义了。', 
+        '就要到最后一关的决战了，你做好准备了吗？'),
+    new LevelData('狭路相逢', 5, 'B7t6C7f2J4p6o8q9gkK6gt9jQ112882R4o26i07l0n0p08j2V0l-n1l-n2l-n3l-n4l-n5l-n6l-n8l-n9l-nal-nbl-ncl-ndl-nel-n', 
+        '难度最大的压轴关卡，最后一关，坚持就是胜利！', 
+        '你真是太厉害了！这时候再回头看看之前的关卡，有没有一览众山小的感觉？能玩通这一关的你对这款小游戏一定是真爱了，有没有感觉意犹未尽呢？稍后将推出反射镜2.0版本，将包含全新的镜子和更多精心设计的关卡，敬请期待吧！'),
+    
+    // 关卡26~30
+    new LevelData('变色镜', 1, 'E0i0J7oK7kM5m9mQ1493', 
+        '变色镜：可以改变入射光线的颜色。当光线从红端进入时，变色规律是：红→绿，绿→蓝，蓝→红；反之，当光线从蓝端进入时，变色规律是：蓝→绿，绿→红，红→蓝。', 
+        '简单的教学关卡，不解释。'),
+    new LevelData('满天星', 2, 'E0n0J1q4p5rK7s8lbqM4m5i7nQ152293', 
+        '有了变色镜，关卡的颜色变得更加丰富多彩了。现在只需要一束单色光，就可以照亮各种颜色的花朵。', 
+        '满天繁星都被你点亮。'),
+    new LevelData('穿梭', 3, 'B6t6L7kMelN6nO4mQ112a92R2i1j2k3l0m1n3o2p1q03h0j0l0o0p0r34h2i2k3l1o0q2r05h3j0k1m2n2o3p2q2r3s3t36h0i3j1o07h1l0o0p0r1s1t18h2j1k3l3m2o3p1q2r29h0j3l3n0p2r3ah1i2j1l0n1o2p3q2r2bh3j0k0n3p0r3ci2j1k3m1n2o1p2q1dk3m1ek3m1', 
+        '如此茂密的光栅丛林，看起来是不是很吓人？不要慌，仔细观察，其实光路的秘密就隐藏在其中。', 
+        '光栅虽然限制了光路方向，但同时也缩减了搜索空间的大小。'),
+    new LevelData('十字架', 3, 'E0m0L7oN7kO9mP5mQ133191', 
+        '只有一束单色光和一个变色镜，要怎么才能照亮四朵复色花朵？破解本关的秘诀在于分光镜，有了它，一切皆有可能。', 
+        '是不是感觉稀里糊涂地就过关了？如果感觉没太明白的话，不如再仔细思考思考，这对破解后面的关卡有帮助哦。'),
+    new LevelData('桥', 4, 'E0t7J9oM5kNbiO3q7hQ22318291', 
+        '29关的升级版，如果你弄明白了上一关的思路，那么这一关一定也难不倒你。', 
+        '两个三棱镜搭起了绿光的桥梁。'),
+    
+    // 关卡31~35
+    new LevelData('传送门', 1, 'C7f2E7t6K7mM7hrQ1124S4mamV0k1k2k3k4k5k6ko7klno8ko9oaobocodoeo', 
+        '传送门：当光线进入传送门之后，如果光路方向上还有其它传送门，那么光线将被转移到下一个传送门。如果光路方向上没有其它传送门，那么光线将就此消失。\n        传送门的位置固定，不可以移动或旋转。注意区分传送门和白色花朵哦。', 
+        '有了传送门，纵使千般阻隔，也能够瞬间跨越。'),
+    new LevelData('乾坤大挪移', 2, 'Bem4C7f2J5q6q7jkK3kl8m9mQ1722S3imq7imqbimq', 
+        '3×3传送门阵列，让光路变得变幻莫测。', 
+        '又是普普通通的一关，下面让我们再来点不一样的。'),
+    new LevelData('闇の花', 1, 'H0m0I7hbicmJ7iKajMbmQ2281R6l1n38n1V3f-ln-q4q5q6q8q9qaqbqcqdqeq', 
+        '黑色花朵：黑色花朵只能在黑暗中生长，任何颜色的光线照射都会使它枯萎凋谢。', 
+        '把黑色花朵理解成不能被光线照射的障碍物就可以了。那三个没有被用到的光栅有没有误导你呢？'),
+    new LevelData('捉迷藏', 3, 'B0m0I0q1fpt3r5hln6io7r8go9ptambrdfmoqJ1g3kdsQ1534S5ko9hkoV0f-ln-pr-t2fhj-ln-prt3fhlnt4fhj-lnprt5frt6fhj-lnprt7fpt8fhj-lnprt9fnafhj-lnprtbftcfh-jl-nprtdnprtef-t', 
+        '三朵蓝花就藏在那里。你能越过重重阻碍，捕捉到它们吗？', 
+        '是不是第一次感受到直角镜还有比分光镜更好用的时候呢？'),
+    new LevelData('包围圈', 2, 'H1s0I0f-np-t1fnpt2ft3ft4ft5ft6ft7ft8ft9ftaftbftcftdftef-tL0oQ2481', 
+        '在黑色花朵的包围之下，照亮青色花朵的光路只有一条。', 
+        '想不到只需要一个三棱镜就能先分光，再合光。是不是很巧妙呢？'),
+    
+    // 关卡36~40
+    new LevelData('七彩石', 4, 'E2r0I3nJ5oK2m3kL5lM2o3qN4pO5kQ122692', 
+        '难度相当大的一关。提示一下，这一关最终的图案就像是一块晶石，小巧而又精致。', 
+        '你真是个小天才！'),
+    new LevelData('夹心饼干', 1, 'D0m0Fem4L7mN7koQ24a3V6i-q8i-q', 
+        '移动传送门：顾名思义，就是可以移动的传送门。为了和普通传送门做区分，移动传送门的中心区域被做成了一个空心圆，而普通传送门的中心区域是米字格。', 
+        '简单的一关。怎么样，这一关的图案是不是像块夹心饼干？'),
+    new LevelData('九宫格', 3, 'E7t6M0m1fh2tbnscgiQ1627a6V0kp1kp2kp3kp4g-t5kp6kp8kp9fgi-rtahikprsbkpckpdkpekp', 
+        '六扇传送门，周游九宫格。要注意传送门的数量有限，一定要物尽其用哦。', 
+        '小小地鼓励一下！'),
+    new LevelData('调色盘', 2, 'B0i0l0o0r01f24f27f2af2df2C0h0k0n0q0t03f26f29f2cf2E0g0j0m0p0s02f25f28f2bf2ef2IbrJ4h7kdqK3s4q5n6hm9gprdhL1t4tatM1j2p9jbmepN5ldselO3m8tbketQad', 
+        '整个反射镜系列当中最绚丽多彩的一关。把传送门当作棋子，有没有感觉自己像是在下一盘大棋？', 
+        '这一关真的很漂亮，就是可能对眼睛有些不太友好。'),
+    new LevelData('花环', 3, 'E7m4L3p4iqaiqbjpN3j7hrcmO2l-nP3ko5iq6hr8hr9iqbkoclnQ1a213191', 
+        '颜色丰富，结构对称，多漂亮的花环！你想看到它被全部点亮后的样子吗？', 
+        '其实这一关和29关是一个套路，看懂以后就很简单了。'),
+    
+    // 关卡41~45
+    new LevelData('风车', 3, 'Bcq4Eci4J5m9mM7koN5ko9koQ27V2h-r3hr4hkor5hjlnpr6hkor7hr8hkor9hjlnprahkorbhrchj-pr', 
+        '又是如此对称的一关。只是地方太小，有点伸展不开。提示一下，在这一关当中要注意斜角镜的重复使用哦。', 
+        '过关后的光路图案是不是很像一个风车？'),
+    new LevelData('暗藏玄机', 3, 'H7f2K3lerP7mQ123181', 
+        '一光三花四镜，看似简简单单，实则暗藏玄机。', 
+        '这一关的思路也太巧妙了吧，你是花了多长时间才想到的呢？'),
+    new LevelData('打破对称性', 4, 'Bcm4E2m0J0m3ko6k8kbgM3s6o8obkoemN7mQ1528V0gs1fk-ot3jp5fjpt6fhrt7ft8fhrt9fjptbjpdfk-otegs', 
+        '完全中心对称的场景，但是却没办法用 中心对称的镜子摆法来解决。如果你喜欢40关或41关这种解法优美的关卡，那么这一关可能会让你感觉很难受。', 
+        '什么都不说了，佩服！'),
+    new LevelData('房间混战', 4, 'B7t6C7f2E0m0Hem4IalJ6m8lK8ockM5qO8knP5p9pQ1327V4j-ln-r5jr6jr8jr9jrajrbjrcjln-r', 
+        '四种颜色的光线在狭窄的空间里交错，四国军棋？', 
+        '相信你已经总结出了规律，对于这种空间狭小的关卡，斜角镜经常是要被重复使用的。'),
+    new LevelData('六边形', 3, 'B0f0Eet4I7mL5m6koO8ko9mQ123492', 
+        '简单又优美的一关，当作中场休息了。', 
+        '原来用分光镜和变色镜能玩出这么多的花样。还剩最后五关，准备好迎接挑战了吗？'),
+    
+    // 关卡46~50
+    new LevelData('游击战', 4, 'C6l48n0E6n28l6K0fr5j7t9fM1s6m8qdfjQ122433V0ip1q7q8tajdp', 
+        '有时候这种绕来绕去的关卡很麻烦，费老大劲，却总是只差那么一点点。', 
+        '对于这种没有明显规律可循的关卡，就要反复尝试，不断优化。相信过关以后的成就感还是非常强的，把镜子节约到极限也有一种美感。'),
+    new LevelData('万花筒', 5, 'B0l0C0m0E0n0J9qK9oL3m6lMenN2l6p8lbopO7n8pP4nQ1425', 
+        '为什么总是只差那么一点点？想想看，到底从哪里还能节省出一面镜子呢？', 
+        '不知道你有没有走弯路呢？'),
+    new LevelData('中国结', 5, 'Cet4E0f0I4m5m7jkmop9mamK5jlnp7l9jlnpakoM4ko5ko6kmo7n8kmo9koQ1i25S1ln4ln6gjlnps8gjlnpsalndln', 
+        '把传送门传送的光看成在布的背面，做这关真的像在穿针引线，编中国结。\n        什么，中国结里没有绿线？不要在意这些细节啦...', 
+        '这一关有没有把你绕晕呢？'),
+    new LevelData('"+ -"', 4, 'H0p0L5gm6gm7klno8gm9gmP7gmQ112682', 
+        '倒数第二关了，换个口味，来一个三棱镜谜题。', 
+        '这关相对与绕线的关来说还是不太难。主要是看到白色青色和三棱镜就知道了思路，有迹可循。'),
+    new LevelData('几何学', 5, 'Eds5J2p3o6p7rK5n9manbpM4h6j8k9iQ152395', 
+        '玩变色镜还是摆脱不了绕线啊。加油，就快要完成了！', 
+        '反射镜系列到此结束了吗？不，还没有，废话不多说，敬请期待吧！'),
+    
+    // 关卡51~55
+    new LevelData('量子镜', 1, 'E7t6JcrK2hM7mQ1191b1', 
+        '量子镜：当光线从量子镜的入口进入量子镜后，会从量子镜的两个出口射出两束方向相反的光线。这两束光线具有量子纠缠效应：当其中一束光线传播一段距离经过变色镜发生颜色改变之后，另一束光同样会在传播相同距离后改变颜色，且两束光的变色规律正好相反。', 
+        '要注意量子镜是不满足光路的可逆性的。当光线从量子镜的出口进入时，光路将就此终止。'),
+    new LevelData('相交', 1, 'B7t6J4iK4kL7lM4m5n9jO4oQ112193b1', 
+        '关于量子镜，还需注意以下两点：\n        1. 光线传播的距离是按照光线所经过的方格数来计算的，而不是几何距离；\n        2. 当一束量子光经过多个变色镜发生多次颜色变化时，因为量子纠缠效应，另一束光也会相应地多次改变颜色。', 
+        '教学关卡到此结束，接下来请接受量子镜的考验吧。'),
+    new LevelData('错位', 2, 'B0m0J5s9gK7gsM5g9sQ1493b1V5hr6hr7hr8hr9hr', 
+        '对于含有量子镜的关卡，通常需要考虑光线传播的距离。相信等你通过这一关之后，就能明白标题的意思了。', 
+        '原来只需要让上面的量子光绕个路，或者把量子镜往下偏移一格就能解决距离的问题了。'),
+    new LevelData('兵分两路', 3, 'E7t6J0kqemK0meioM0ioekqQ1594b1', 
+        '上一关的加强版，同样需要控制光线传播的距离。如果没有思路的话，注意观察两边花朵颜色排列之间的关系，相信其中的规律还是不难看出来的。', 
+        '千万不要有量子镜一定要放在中轴线上这种思维定势哦。'),
+    new LevelData('棋差一着', 3, 'E7s6J0s1tdfegK0g1fdtesQ1492b1', 
+        '思路如此清晰的一关，为什么到最后总是有点不对劲？其实只需要做一点小小的改变，问题就能迎刃而解。如果你还是没有想明白的话，不妨再多做一些尝试，毕竟可能的解法并不多。', 
+        '原来用直角镜把一束量子光原路反射回去之后，还能让它再经过一次变色镜，从而使另一束量子光再发生一次颜色的改变。不知道你是自己发现这个规律的呢，还是偶然间试出来的呢？'),
+    
+    // 关卡56~60
+    new LevelData('红绿白', 2, 'Hem4K1jM4hP7sQ118191b1V0g-iklnoq-s1f-hr-t2fgknost3fklot5fhiklnoqrt6f-hklnor-t8f-hklnor-t9fhiklnoqrtbfknotcfgklostdf-hr-teg-iklnoq-s', 
+        '量子镜和三棱镜的第一次合作。对于这种关卡，把白光分开成三色光分别去看，可能会更有利于思考。', 
+        '变色镜对白光的作用，在经过三棱镜的分光后显现了出来。这一关是不是很巧妙呢？'),
+    new LevelData('天堑', 2, 'C0p0Eej4I0m1m2m3m4m5m6m7m8m9mambmcmdmemJ7r8rK9hahrbrQ162291b1S2h3r5h6r8h9rbhcr', 
+        '量子光在经过传送门之后，仍然保持着量子纠缠效应。需要注意的是：光线在两个传送门之间跨越的距离，不被算在光线的传播距离之内。', 
+        '简单的一关，当作是温习一下传送门的特性了。'),
+    new LevelData('穿针引线', 2, 'E7t6J2rbicrK1s7iM3idsQ1892b1S3qbqV5t6st8st9t', 
+        '还是量子镜加传送门。过关的关键仍然是把握光线的传播距离。根据上一关的介绍容易知道，传送门可以缩短量子光的传播距离。你是不是明白了呢？', 
+        '只要想明白两束量子光应该分别照亮哪些花朵，这一关就不难。'),
+    new LevelData('星星点点', 3, 'B7t6J0q5mKbfL3fMemN4l8l9qbqQ162392b1S4p7imap', 
+        '花朵分布比较零散的一关，让人很难一眼看出光路的走向。传送门在这一关里又有什么作用呢？', 
+        '有没有看明白最下面一行的青色花朵是怎样被点亮的呢？原来把一束量子光原路反射回去之后，还可能得到复色光。'),
+    new LevelData('量子镜阵列', 2, 'C7m0J4oakM4kaoN4mQ95b5', 
+        '这一关居然有这么多量子镜，一定会很难吧。实际上这一关并不难。这里需要注意的是：当一束量子光进入另外一个量子镜之后，量子纠缠效应随即消失。也就是说，量子纠缠作用不会在多个量子镜之间传递下去。', 
+        '逻辑简单，思路清晰，不解释。'),
+    
+    // 关卡61~65
+    new LevelData('变色龙', 4, 'H0f1J3sL9sN7sO5sQ11218197b1V3r4r5r6r7r8r9r', 
+        '非常有意思的一关，考验你对量子镜的理解程度了。这一关的解法是多样的，其中一种解法甚至能节省出3个变色镜。要不要尝试一下呢？', 
+        '把白色量子光分成三束单色光后再分别变色，和56关的思路正好相反。或者只对绿光进行了操作，这样还能省下3个变色镜。你用的是哪种方法呢？'),
+    new LevelData('旋转镜', 1, 'B0t6C0f0Eet4Hef2J7no8m9mK5m6m7klM5o6n8n9oP5k6l8l9kQ1522U7m', 
+        '旋转镜：对于从任意角度入射的光线，都能使其逆时针转动90度。旋转镜的位置和方向都是固定的，不可以移动和旋转。', 
+        '奇怪的镜子增加了。'),
+    new LevelData('角落', 2, 'Dck4L0fteftQ112531U7mV0is1ht2g3f9gagbgcghdh-k', 
+        '还记不记得第8关一气化三"青"呢？在这一关里，你需要尝试一气化四"青"了。', 
+        '要注意旋转镜也是不满足光路可逆性的。因此用分光镜让光线原路返回之后再经过旋转镜，就会得到新的光路，从而让一束光分成四束光。'),
+    new LevelData('蛋黄派', 3, 'G2r0O4mnpq5m-q6m-q7m-q8mnpqQ1424U4o8o', 
+        '难度稍稍加大了。要想用一束光线就照亮这个黄色花朵组成的方阵，就需要尽可能地发挥旋转镜的作用。', 
+        '到目前为止，黄色光源还是第一次出现，有没有感觉很好看呢？'),
+    new LevelData('黑钻石', 3, 'E0t6I0m1ln2ko3jp4iq5hr6gs7ft8gs9hraiqbjpckodlnemM3l5m6ilr7r8r9ikapciQ1627S3imq7iqbimqU7mV0fhjlnp2fhjprt4fhrt6ft8ftafhrtcfhjprtefhjlnprt', 
+        '旋转镜与传送门的结合，看起来就很漂亮的一关。要注意避让外圈的黑色花朵哦。', 
+        '这一关可能要稍微绕一绕，不过也不是太复杂。'),
+    
+    // 关卡66~70
+    new LevelData('海的颜色', 4, 'H7f2J3lK8nL6kP5qaoQ238191b1V0gilnqs1fikoqt3fgikmoqstbfgikmoqstdfikoqtegilnqs', 
+        '又回到了熟悉的量子镜关卡。从这一关开始，关卡的难度要整体上升一个台阶了。准备好了吗？面对疾风吧！', 
+        '这一关最难想到的是量子镜的摆放位置。如果你足够敏锐的话，会发现把白色花朵分解成红色和青色是合理的，因为红色与绿色蓝色形成三种单色，青色与青色花朵对应。这样的话，就容易反推出三棱镜和量子镜的摆放位置了。'),
+    new LevelData('回光返照', 4, 'H7t6KbotL9pM5n8kN8nP5qQ138191b1', 
+        '这一关的标题还是很有信息量的。不知道你能不能看出其中的玄机呢？', 
+        '有没有发现这一关里的白色花朵其实是变相地提示了你量子镜的位置？这一关最精妙的地方在于第一行的绿色花朵是被直角镜原路返回的光线照亮的，这就是标题叫回光返照的原因了。'),
+    new LevelData('大斜线', 5, 'E7r6JbhoK4rM6p7hbkQ11228192b1', 
+        '这一关看起来人畜无害，然而它的解法却不同寻常。当你用常规方法发现只剩一朵花没被点亮的时候，很遗憾地告诉你，真相可能离你还很遥远。不过也不要灰心，毕竟这一关的镜子数量不多。多尝试不同的思路，也许你就能成功过关。', 
+        '这一关的神仙解法几乎把量子镜的特性运用到了极致。如果你独立完成了这一关，那你可真是太厉害了。'),
+    new LevelData('丛林', 4, 'H0k0ek4JesK7rN7tO0s7pQ14218192b1R0o0p0q0r01o0p02p1t23o1r1s2t24o1r1s2t25o0p0r3s2t26t27o0q08t29o0p0r1s2t2ao3r3s2t2bo3r3s2t2cp3t2do0p0eo0p0q0r0V2o4p6o-r8o-rapco', 
+        '又是两束白光加三棱镜的组合。如果你对前面的关卡比较熟悉的话，相信你的脑海里应该有大致的思路了。', 
+        '这一关相当于22关和56关的结合体了。在这一关里量子光和普通光经过三棱镜后混合在了一起，因此把它们分开分析可能更容易理解。'),
+    new LevelData('冷暖', 3, 'H7t6J6hapKdoLalM9gN6jO3mP4pQ112241516192b1', 
+        '这一关是量子镜和滤光镜的组合，和前面几关相比难度适中，来试试看吧。', 
+        '有没有发现从量子镜分出的两束光线分别照亮了所有的冷色花朵和暖色花朵？这就是这一关标题的由来了。'),
+    
+    // 关卡71~75
+    new LevelData('对接', 4, 'C3q0K7oL6mblN1qbpdmO3s9mPbmQ1793b1', 
+        '一束单色光要照亮这么多复色花朵，乍一看感觉不可思议。再看一看这一关的标题，你有没有想明白了点什么？', 
+        '这一关的突破点在绿色花朵和白色花朵，同时标题也给了充分的暗示。你有没有想明白对接起来的两束量子光分别发生了怎样的颜色变化呢？'),
+    new LevelData('蝴蝶结', 3, 'E0m0J5q7o9qK5i7k9iM3m4ln6ln7m8lnalnN6p8pO6j8jQ172691b1U5ko9ko', 
+        '量子镜和旋转镜也是可以合作的，而且能够设计出精美的图案。这种颜色和结构都很对称的关卡一般思路都比较清晰，加油吧。', 
+        '离终点越来越近了，稍微休整一下，还剩最后三关。最后三关的难度都很高，毕竟作为压轴关卡，没有难度怎么行呢？加油加油！'),
+    new LevelData('长路漫漫', 5, 'E7p6JcfKefQ1c8193b1Rbj2df2V1g-s2gs3gi-qs4giqs5giqs6giqs7giqs8giqs9giqsagiqsbgik-qscgisdgi-seg', 
+        '这是一个非常有趣的关卡，也是我们为数不多的原创关卡之一。这一关的思路其实很清晰，光栅的阻挡使得光线的颜色变化必须依靠量子纠缠效应。问题是，怎样让两束量子光在变色前走过相同的距离呢？想明白了这一点，这一关也就迎刃而解了。', 
+        '只有让内圈的量子光发生无限循环，才能达到外圈量子光的传播距离。最后在外圈量子光的末尾加上反色镜，就能破除内圈的无限循环，从而保证内外圈的距离相等。有没有被这一关的设计思路惊艳到？'),
+    new LevelData('颜色大战', 5, 'B2p7J6n8mL3oM4l5p6lOakP4nQ13238192b1', 
+        '倒数第二关了，还是量子镜加三棱镜的组合。对于这种关卡，量子镜和三棱镜的摆放位置往往至关重要。问题是如何找准这两个镜子的合理位置呢？这就需要你对花朵整体的颜色和位置之间的关系有足够的敏感性以及一定的推理能力。思维是可以锻炼的，相信你可以！', 
+        '想不到这一关还是被你成功破解了，一定很有成就感吧！现在就剩下最后一关了，再接再厉。'),
+    new LevelData('花花世界', 5, 'Eet6J7pK0l5iblLambnM1p6im7kN8mOemQ1792b1Ubm', 
+        '以量子镜和旋转镜的组合作为这一版本的压轴关卡，有足够的难度保证。这些看似零散分布的花朵，你能找到它们之间的隐藏的联系吗？', 
+        '由衷地佩服能看到这段话的你。相信这第三版的25个关卡给你带来了足够的头脑风暴。反射镜系列依旧没有完结，还有最后25关正在等着你来挑战。在最后的25关中，还会有全新的镜子加入，以及更多的原创关卡，希望能给你带来足够的惊喜。敬请期待吧！') 
+];
 
-Level[0] = 'E0m0M7sQ11'
-Level[1] = 'Ben4E0l0J5kM8nQ13'
-Level[2] = 'B0q7C3f1Eei4L9nN7lO7pQ13'
-Level[3] = 'C0l0K4p6io8p9qQ33'
-Level[4] = 'C0l0E0n0O7hdmQ1231'
-Level[5] = 'Cco4E2k0K5o8janM2n5ibkQ1133'
-Level[6] = 'Bat6E3t6J4p7rM5kbqQ23'
-Level[7] = 'D3r6L2lm3ln4mnQ112131'
-Level[8] = 'C0f2K2i6ocgqQ132132R1f1g1h1i1j1k1l1m1n1o1p1q1r1s1t54f1g1h1i1j1k1l1m1n1o1p1q1r1s1t1af1g1h1i1j1k1l1m1n1o1p1q1r1s1t1df1g1h5i1j1k1l1m1n1o5p1q1r1s1t1'
-Level[9] = 'E0s0M1k2o5k7foalbgcsdrQ112iV0q1q2h-nq3hnq4hj-lnq5hjlnq6hjlnq7hjnq8hj-nq9hqahqbh-q'
-Level[10] = 'Cdl4E1m0KarM4rQ1321V3o-s4o-qs5oprs6oq-s7p-s8oq-s9oprsao-qsbo-s'
-Level[11] = 'Bdn4E1l0J4j7hajM4p7rapN7mQ34'
-Level[12] = 'Bes4Eeg4J2o9jckM5j7p8lQ2732V0imq1imq2m3imq4imq5imq6imq7imq8imq9imqaimqbimqciqdimqeimq'
-Level[13] = 'B6t6Cel4E0n0H8f2J8nK6nM8lP6lQ1522'
-Level[14] = 'H0m0JbmK3jLapM2pN9kOcrP7mQ2532415161R4m26m28m2am2'
-Level[15] = 'B7f2Cem4E7t6H0m0J5mK7mM9mP4m6m8mamQ1723V5jp6jkop8jkop9jp'
-Level[16] = 'H7f2J3m4ln5mK9kajlbkM8p9oqapQ1435415161'
-Level[17] = 'H0p0JefK7fM0fQ2181'
-Level[18] = 'H7t6JafK7fM4fP6r7l8nQ142181V0st1gi-km-qst2st3f-ikmoqst4g-ikmoqst5fhiost6fgik-moqst8fgik-moqst9fhioqstag-ikmostbf-ikmoqstcstdgi-km-qstest';
-Level[19] = 'Bbj2E3j2J3iMbiQ112182V2h-r3hr4hikmoqr5hr6hikmoqr7hr8hikmoqr9hrahikmoqrbhrch-r';
-Level[20] = 'B0s0Cet5Edg3K8nP1gQ112681V0f-h1fh2fgi3hj-m4i5i6ilo7in8ms9lpsaosbqstctdn-qteq-s';
-Level[21] = 'H1l0dn4L2t7tM0ocfQ122281V5fhjlnprt9fhjlnprt';
-Level[22] = 'B0h1C7f2Eeo4P4o5q7r9qQ12243281R6n3o2p17n0p08n1o2p3V0r-t1p-t2n-t3l-np-t4knr-t5knpr-t6k-mq-t7st8k-mqst9knpstaknpqstbl-np-t';
-Level[23] = 'H0m0J6l8nK6m8mM7lnP7memQ132482V3f-ln-tbf-ln-t';
-Level[24] = 'B7t6C7f2J4p6o8q9gkK6gt9jQ112882R4o26i07l0n0p08j2V0l-n1l-n2l-n3l-n4l-n5l-n6l-n8l-n9l-nal-nbl-ncl-ndl-nel-n';
-Level[25] = 'E0i0J7oK7kM5m9mQ1493';
-Level[26] = 'E0n0J1q4p5rK7s8lbqM4m5i7nQ152293';
-Level[27] = 'B6t6L7kMelN6nO4mQ112a92R2i1j2k3l0m1n3o2p1q03h0j0l0o0p0r34h2i2k3l1o0q2r05h3j0k1m2n2o3p2q2r3s3t36h0i3j1o07h1l0o0p0r1s1t18h2j1k3l3m2o3p1q2r29h0j3l3n0p2r3ah1i2j1l0n1o2p3q2r2bh3j0k0n3p0r3ci2j1k3m1n2o1p2q1dk3m1ek3m1';
-Level[28] = 'E0m0L7oN7kO9mP5mQ133191';
-Level[29] = 'E0t7J9oM5kNbiO3q7hQ22318291';
-Level[30] = 'C7f2E7t6K7mM7hrQ1124S4mamV0k1k2k3k4k5k6ko7klno8ko9oaobocodoeo';
-Level[31] = 'Bem4C7f2J5q6q7jkK3kl8m9mQ1722S3imq7imqbimq';
-Level[32] = 'H0m0I7hbicmJ7iKajMbmQ2281R6l1n38n1V3f-ln-q4q5q6q8q9qaqbqcqdqeq';
-Level[33] = 'B0m0I0q1fpt3r5hln6io7r8go9optambrdfmoqJ1g3kdsQ1534S5ko9hkoV0f-ln-pr-t2fhj-ln-prt3fhlnt4fhj-lnprt5frt6fhj-lnprt7fpt8fhj-lnprt9fnafhj-lnprtbftcfh-jl-nprtdnprtef-t';
-Level[34] = 'H1s0I0f-np-t1fnpt2ft3ft4ft5ft6ft7ft8ft9ftaftbftcftdftef-tL0oQ2481';
-Level[35] = 'E2r0I3nJ5oK2m3kL5lM2o3qN4pO5kQ122692';
-Level[36] = 'D0m0Fem4L7mN7koQ24a3V6i-q8i-q';
-Level[37] = 'E7t6M0m1fh2tbnscgiQ1627a6V0kp1kp2kp3kp4g-t5kp6kp8kp9fgi-rtahikprsbkpckpdkpekp';
-Level[38] = 'B0i0l0o0r01f24f27f2af2df2C0h0k0n0q0t03f26f29f2cf2E0g0j0m0p0s02f25f28f2bf2ef2IbrJ4h7kdqK3s4q5n6hm9gprdhL1t4tatM1j2p9jbmepN5ldselO3m8tbketQad';
-Level[39] = 'E7m4L3p4iqaiqbjpN3j7hrcmO2l-nP3ko5iq6hr8hr9iqbkoclnQ1a213191';
-Level[40] = 'Bcq4Eci4J5m9mM7koN5ko9koQ27V2h-r3hr4hkor5hjlnpr6hkor7hr8hkor9hjlnprahkorbhrchj-pr';
-Level[41] = 'H7f2K3lerP7mQ123181';
-Level[42] = 'Bcm4E2m0J0m3ko6k8kbgM3s6o8obkoemN7mQ1528V0gs1fk-ot3jp5fjpt6fhrt7ft8fhrt9fjptbjpdfk-otegs';
-Level[43] = 'B7t6C7f2E0m0Hem4IalJ6m8lK8ockM5qO8knP5p9pQ1327V4j-ln-r5jr6jr8jr9jrajrbjrcjln-r';
-Level[44] = 'B0f0Eet4I7mL5m6koO8ko9mQ123492';
-Level[45] = 'C6l48n0E6n28l6K0fr5j7t9fM1s6m8qdfjQ122433V0ip1q7q8tajdp';
-Level[46] = 'B0l0C0m0E0n0J9qK9oL3m6lMenN2l6p8lbopO7n8pP4nQ1425';
-Level[47] = 'Cet4E0f0I4m5m7jkmop9mamK5jlnp7l9jlnpakoM4ko5ko6kmo7n8kmo9koQ1i25S1ln4ln6gjlnps8gjlnpsalndln';
-Level[48] = 'H0p0L5gm6gm7klno8gm9gmP7gmQ112682';
-Level[49] = 'Eds5J2p3o6p7rK5n9manbpM4h6j8k9iQ152395';
-Level[50] = 'E7t6JcrK2hM7mQ1191b1';
-Level[51] = 'B7t6J4iK4kL7lM4m5n9jO4oQ112193b1';
-Level[52] = 'B0m0J5s9gK7gsM5g9sQ1493b1V5hr6hr7hr8hr9hr';
-Level[53] = 'E7t6J0kqemK0meioM0ioekqQ1594b1';
-Level[54] = 'E7s6J0s1tdfegK0g1fdtesQ1492b1';
-Level[55] = 'Hem4K1jM4hP7sQ118191b1V0g-iklnoq-s1f-hr-t2fgknost3fklot5fhiklnoqrt6f-hklnor-t8f-hklnor-t9fhiklnoqrtbfknotcfgklostdf-hr-teg-iklnoq-s';
-Level[56] = 'C0p0Eej4I0m1m2m3m4m5m6m7m8m9mambmcmdmemJ7r8rK9hahrbrQ162291b1S2h3r5h6r8h9rbhcr';
-Level[57] = 'E7t6J2rbicrK1s7iM3idsQ1892b1S3qbqV5t6st8st9t';
-Level[58] = 'B7t6J0q5mKbfL3fMemN4l8l9qbqQ162392b1S4p7imap';
-Level[59] = 'C7m0J4oakM4kaoN4mQ95b5';
-Level[60] = 'H0f1J3sL9sN7sO5sQ11218197b1V3r4r5r6r7r8r9r';
-Level[61] = 'B0t6C0f0Eet4Hef2J7no8m9mK5m6m7klM5o6n8n9oP5k6l8l9kQ1522U7m';
-Level[62] = 'Dck4L0fteftQ112531U7mV0is1ht2g3f9gagbgcghdh-k';
-Level[63] = 'G2r0O4mnpq5m-q6m-q7m-q8mnpqQ1424U4o8o';
-Level[64] = 'E0t6I0m1ln2ko3jp4iq5hr6gs7ft8gs9hraiqbjpckodlnemM3l5m6ilr7r8r9ikapciQ1627S3imq7iqbimqU7mV0fhjlnp2fhjprt4fhrt6ft8ftafhrtcfhjprtefhjlnprt';
-Level[65] = 'H7f2J3lK8nL6kP5qaoQ238191b1V0gilnqs1fikoqt3fgikmoqstbfgikmoqstdfikoqtegilnqs';
-Level[66] = 'H7t6KbotL9pM5n8kN8nP5qQ138191b1';
-Level[67] = 'E7r6JbhoK4rM6p7hbkQ11228192b1';
-Level[68] = 'H0k0ek4JesK7rN7tO0s7pQ14218192b1R0o0p0q0r01o0p02p1t23o1r1s2t24o1r1s2t25o0p0r3s2t26t27o0q08t29o0p0r1s2t2ao3r3s2t2bo3r3s2t2cp3t2do0p0eo0p0q0r0V2o4p6o-r8o-rapco';
-Level[69] = 'H7t6J6hapKdoLalM9gN6jO3mP4pQ112241516192b1';
-Level[70] = 'C3q0K7oL6mblN1qbpdmO3s9mPbmQ1793b1';
-Level[71] = 'E0m0J5q7o9qK5i7k9iM3m4ln6ln7m8lnalnN6p8pO6j8jQ172691b1U5ko9ko';
-Level[72] = 'E7p6JcfKefQ1c8193b1Rbj2df2V1g-s2gs3gi-qs4giqs5giqs6giqs7giqs8giqs9giqsagiqsbgik-qscgisdgi-seg';
-Level[73] = 'B2p7J6n8mL3oM4l5p6lOakP4nQ13238192b1';
-Level[74] = 'Eet6J7pK0l5iblLambnM1p6im7kN8mOemQ1792b1Ubm';
-Level[75] = '';
-Level[76] = '';
-Level[77] = '';
-Level[78] = '';
-Level[79] = '';
+let extralevelData: LevelData[] = [
+    // 关卡1~5
+    new LevelData('多彩', 2, 'H7t6JbsKbgM3gN3sbkO3kP3oQ1392b1f1h1',
+        '广告位招租', 
+        '过关！'),
+    new LevelData('三棱镜迷宫', 1, 'H7f2P7tQ8793V0f-t1ft2fhj-ln-prt3ft4fjl-nprt5ft6flnprt7m8flnprt9ftafjlnp-rtbftcfh-jl-nprtdftef-t',
+        '广告位招租', 
+        '过关！'),
+    new LevelData('对峙', 5, 'B0m0J8jcqK4k8loL2oM4iN4mcoP6mQ142493b1R3n14j07n38k0cp0',
+        '广告位招租', 
+        '过关！'),
+    new LevelData('反馈', 5, 'E0f2L2j7jM4oN6m7qO8l9pP2laiQ15218193b1',
+        '广告位招租', 
+        '过关！'),
+    new LevelData('回环', 1, 'B7l7E7n3J2nr4k8lrbjM3p6haochlN4moq6iq7m8iqaikmQ2832',
+        '广告位招租', 
+        '过关！'),
+        
+    // 关卡6~10
+    new LevelData('三复色', 3, 'Dem4Fej4Gep4K1mP3jp9majpbmcjpQ122183V0jp3t5fag',
+        '广告位招租', 
+        '过关！'),
+    new LevelData('颜色大战2', 2, 'B8k2F0q0G3o0K8qL6pM6oN5p9oP4oQ112182',
+        '广告位招租', 
+        '过关！'),
+    new LevelData('牢房', 3, 'H0m0I3ko5ko7ko9koJ2oK6kMamO6oQ223281R1m22l0n04l0n06l0n08l0n0al0n0V0ln1j-ln-p2jp3jp4jp5jp6jp7jp8jp9jpajpbj-p',
+        '广告位招租', 
+        '过关！'),
+    new LevelData('青红之争1', 2, 'H1p0L6km8moM5ko9koP8rQ2781',
+        '广告位招租', 
+        '过关！'),
+    new LevelData('房间混战2', 2, 'Eef2I7kpbkpetJ9pL5jk8o9oaocpM9kakeoN6mn8kbnOclmPeh-jQ12233391V4i-q5iq6iq7iq8iq9iqaiqbiqciqdf-ko-t',
+        '广告位招租', 
+        '过关！'),
+        
+    // 关卡11~15
+    new LevelData('轨道', 1, 'C7f2I3ilJelK0l7hbtLalbgMafN3gO7kP7g9gQ1123348391R6j5k6l77j0l08j7k6l5V0fjkmn1f-jlno2fo3fo4fh-jmo5fh-jlmo6fhimo7o8fimo9fh-jlmoahikmo-tbfhj-lcfi-km-tdfhikmef-hkm',
+        '广告位招租', 
+        '过关！'),
+    new LevelData('满天星2', 2, 'E1n6J3o5q8jK4l8p9iM4r7gcpQ112792',
+        '广告位招租', 
+        '过关！'),
+    new LevelData('彩尾小鱼', 2, 'Eaf2J6gM8gP6k7im8kQ132291f1h1',
+        '广告位招租', 
+        '过关！'),
+    new LevelData('青红之争2', 3, 'H7f2L4lp6p8hajM8jP6lrQ162181',
+        '广告位招租', 
+        '过关！'),
+    new LevelData('青红之争3', 2, 'H0j1I4j7iobkchL6hjn9mbiQ2481',
+        '广告位招租', 
+        '过关！'),
+        
+    // 关卡16~20
+    new LevelData('颜色大战3', 4, 'E0m0JamLaoM3n8kN3l5l6kQ11223291h1',
+        '广告位招租', 
+        '过关！'),
+    new LevelData('捕获激光', 4, 'E7p6JefKcfQ1a92b1f1Rbj2df2V1g-s2gs3gi-qs4giqs5giqs6giqs7giqs8giqs9giqsagiqsbgik-qscgisdgi-seg',
+        '广告位招租', 
+        '过关！'),
+    new LevelData('循环节', 5, 'E7t6L2f6fcfM4fO8fafQ1493b1f1R1f23f25f27f29f2bf2df2V1g2g3g4g5g6g7g8g9gagbgcgdg',
+        '广告位招租', 
+        '过关！'),
+    new LevelData('两行', 1, 'H7t7J2kmckmK8mM8kO4km6kmakmQ27f1g1h1',
+        '广告位招租', 
+        '过关！'),
+    new LevelData('三顾茅庐', 2, 'B0f0P7mQ11248192R7l0n0V6l-n8l-n',
+        '广告位招租', 
+        '过关！'),
+        
+    // 关卡21~25
+    new LevelData('限号通行', 5, 'H7f2LamN4mO7mP7tQ162681g1R6t28t2V0m1m2m3m5m6ms7s8ms9mbmcmdmem',
+        '广告位招租', 
+        '过关！'),
+    new LevelData('花团', 5, 'E0l0I6pqJ5p9oqK9sL8opM7o8qN7nP6o7qQ15228196b1V0m1m2m3m4m5m6m8m9mambmcmdmem',
+        '广告位招租', 
+        '过关！'),
+    new LevelData('FLD生日快乐', 4, 'B0f0Cef4E7t6I0gt1g2gt4gt5t6t8t9tagtcgtdtegtJ9l-palpbm-oK3l-p4np5npL6i-l8iM1l-q2kr3js4is5hs6gr7fq8gr9hsaisbjsckrdl-qP7iQ1b2b32V0h-j1hi2hchdhieh-j',
+        '广告位招租', 
+        '过关！'),
+    new LevelData('双线反色', 1, 'G0m0J0lnQ238191e1',
+        '广告位招租', 
+        '过关！'),
+    new LevelData('颜色大战4', 3, 'B0m0L2kM4mO2oQ1122318191',
+        '广告位招租', 
+        '过关！'),
+        
+    // 关卡26~30
+    new LevelData('颜色大战5', 3, 'C0m0L3lM3mN3nQ1122318191',
+        '广告位招租', 
+        '过关！'),
+    new LevelData('超级加倍', 5, 'B0j0q09q0ah0L2hobocfM4jqdqehO2lsbscjQ1628328394g1V0mn1mn2mn3mn4mn5mn6mn7m-t8m-t9f-mak-mbk-mck-mdk-mek-m',
+        '广告位招租', 
+        '过关！'),
+    new LevelData('颜色大战6', 2, 'B0m0L2kM4mO2oQ238192',
+        '广告位招租', 
+        '过关！'),
+    new LevelData('三连变', 3, 'B1f4C1g4E1h4J8fekKdfMeqQ17218191b1R0i03g0V1i2f-i4g5g6g7g8g9gagbgcgdg-t',
+        '广告位招租', 
+        '过关！'),
+    new LevelData('五连变', 3, 'B1f4C1g4E1h4J2t9fKcteiM0pepQ1a228191b1R0i03g0V0l1il-s2f-is3s4gs5gs6gs7gs8gs9gsagsbgscgsdg-s',
+        '广告位招租', 
+        '过关！'),
+        
+    // 关卡31~35
+    new LevelData('紫目混珠', 4, 'H7f2N0hP0fjefhjQ15228191b1R0g0i0eg0i0V1f-jdf-j',
+        '广告位招租', 
+        '过关！'),
+    new LevelData('阡陌交通', 1, 'B0g0Ceq4E7t6Fdm6Hdf2I0imq1fjl2o3fnt5hprt6i7f8gk9faibfijndntegimJ0s1g4sdrK1h3p5ln8o9irbtL6kaoscqM0ko1p3l5fmN1sdilO7op9jPbgcidjkQ19293181R1i35i39g1dh2S5kbkV0fhjlnprt2fhjlnprt4fhjlnprt6fhjlnprt8fhjlnprtafhjlnprtcfhjlnprtefhjlnprt',
+        '广告位招租', 
+        '过关！'),
+    new LevelData('白提灯与红甲虫', 5, 'H7g6I4hiklno5gmop6gmnp-t8gmnp-t9gmopahiklnoM0fP5n7t9nQ16238194b1f3R6o37o08o5',
+        '广告位招租', 
+        '过关！'),
+    new LevelData('宝座', 2, 'B3q06j69q4C7f48l6E4l65f0H0t6ct6I0k1g-jlmoq2g3gi-l4fo5klnr6s7klnr8fo9gi-lagbg-jlmoqckJ4q6i8qK5o9hamM2m3h7oO4p5hs6t7hs8pP0m-s6gcm-sQ1c2434R0g01f62f65g26h07g2af6bf6cg0S0l2s3f5q6fpr7q9fasclV1npr-t2o-rt3npr-t4m5ijmp6k-oq7ijmp8m9npr-tao-rtbnpr-tdf-tef-t',
+        '广告位招租', 
+        '过关！'),
+    new LevelData('漩涡', 3, 'B0h0C0g0D0i0E0f0F0j0G0k0H1t6I9rarJ8mnafbfcfKehL9lalM8pqN9oaoObpqP3mnpq4lor5lor6mnpqbmncjdikQ1g3281a2S2g4t7t8oagtbhlcodghU4mnpq5mnpq9mnpqamnpqV0l-t4s5s6s7l-s8s9sasel-t',
+        '广告位招租', 
+        '过关！')
+];
 
-Name[0] = '开始';
-Name[1] = '单色';
-Name[2] = '复色';
-Name[3] = '分光镜';
-Name[4] = '分光镜的魔法';
-Name[5] = '夏日池塘';
-Name[6] = '斜角镜';
-Name[7] = '一气化三“青”';
-Name[8] = '光栅';
-Name[9] = '曲径通幽';
-Name[10] = '各就各位';
-Name[11] = '双剑合璧';
-Name[12] = '双蛇出洞';
-Name[13] = '四色纠缠';
-Name[14] = '白生六色';
-Name[15] = '一波三折';
-Name[16] = '花团锦簇';
-Name[17] = '三棱镜';
-Name[18] = '迷宫';
-Name[19] = '密室';
-Name[20] = '深入虎穴';
-Name[21] = '青红皂白';
-Name[22] = '不可能的任务';
-Name[23] = '分久必合，合久必分';
-Name[24] = '狭路相逢';
-Name[25] = '变色镜';
-Name[26] = '满天星';
-Name[27] = '穿梭';
-Name[28] = '十字架';
-Name[29] = '桥';
-Name[30] = '传送门';
-Name[31] = '乾坤大挪移';
-Name[32] = '闇の花';
-Name[33] = '捉迷藏';
-Name[34] = '包围圈';
-Name[35] = '七彩石';
-Name[36] = '夹心饼干';
-Name[37] = '九宫格';
-Name[38] = '调色盘';
-Name[39] = '花环';
-Name[40] = '风车';
-Name[41] = '暗藏玄机';
-Name[42] = '打破对称性';
-Name[43] = '房间混战';
-Name[44] = '六边形';
-Name[45] = '游击战';
-Name[46] = '万花筒';
-Name[47] = '中国结';
-Name[48] = '“+ -”';
-Name[49] = '几何学';
-Name[50] = '量子镜';
-Name[51] = '相交';
-Name[52] = '错位';
-Name[53] = '兵分两路';
-Name[54] = '棋差一着';
-Name[55] = '红绿白';
-Name[56] = '天堑';
-Name[57] = '穿针引线';
-Name[58] = '星星点点';
-Name[59] = '量子镜阵列';
-Name[60] = '变色龙';
-Name[61] = '旋转镜';
-Name[62] = '角落';
-Name[63] = '蛋黄派';
-Name[64] = '黑钻石';
-Name[65] = '海的颜色';
-Name[66] = '回光返照';
-Name[67] = '大斜线';
-Name[68] = '丛林';
-Name[69] = '冷暖';
-Name[70] = '对接';
-Name[71] = '蝴蝶结';
-Name[72] = '长路漫漫';
-Name[73] = '颜色大战';
-Name[74] = '花花世界';
-Name[75] = 'NULL';
-Name[76] = 'NULL';
-Name[77] = 'NULL';
-Name[78] = '三棱镜宫';
-Name[79] = '四象';
+export let TotalBasicLevel = basiclevelData.length;
+export let TotalExtraLevel = extralevelData.length;
 
-Diff[0] = 1;
-Diff[1] = 1;
-Diff[2] = 1;
-Diff[3] = 2;
-Diff[4] = 2;
-Diff[5] = 2;
-Diff[6] = 1;
-Diff[7] = 2;
-Diff[8] = 2;
-Diff[9] = 2;
-Diff[10] = 2;
-Diff[11] = 2;
-Diff[12] = 2;
-Diff[13] = 3;
-Diff[14] = 3;
-Diff[15] = 3;
-Diff[16] = 2;
-Diff[17] = 1;
-Diff[18] = 3;
-Diff[19] = 3;
-Diff[20] = 3;
-Diff[21] = 4;
-Diff[22] = 5;
-Diff[23] = 3;
-Diff[24] = 5;
-Diff[25] = 1;
-Diff[26] = 2;
-Diff[27] = 3;
-Diff[28] = 3;
-Diff[29] = 4;
-Diff[30] = 1;
-Diff[31] = 2;
-Diff[32] = 1;
-Diff[33] = 3;
-Diff[34] = 2;
-Diff[35] = 4;
-Diff[36] = 1;
-Diff[37] = 3;
-Diff[38] = 2;
-Diff[39] = 3;
-Diff[40] = 3;
-Diff[41] = 3;
-Diff[42] = 4;
-Diff[43] = 4;
-Diff[44] = 3;
-Diff[45] = 4;
-Diff[46] = 5;
-Diff[47] = 5;
-Diff[48] = 4;
-Diff[49] = 5;
-Diff[50] = 1;
-Diff[51] = 1;
-Diff[52] = 2;
-Diff[53] = 3;
-Diff[54] = 3;
-Diff[55] = 2;
-Diff[56] = 2;
-Diff[57] = 2;
-Diff[58] = 3;
-Diff[59] = 2;
-Diff[60] = 4;
-Diff[61] = 1;
-Diff[62] = 2;
-Diff[63] = 3;
-Diff[64] = 3;
-Diff[65] = 4;
-Diff[66] = 4;
-Diff[67] = 5;
-Diff[68] = 4;
-Diff[69] = 3;
-Diff[70] = 4;
-Diff[71] = 3;
-Diff[72] = 5;
-Diff[73] = 5;
-Diff[74] = 5;
-Diff[75] = 5;
-Diff[76] = 5;
-Diff[77] = 3;
-Diff[78] = 4;
-Diff[79] = 3;
-
-Des[0] = '游戏方法：拖动棋盘下方的直角镜到光路上，点击镜子使其旋转，让光线照亮花朵。\n        直角镜：对于特定角度的入射光线，可以使其原路返回或者发生90度的偏转。要注意直角镜只有一个面能反射光线哦。';
-Des[1] = '为什么红花无法被照亮？难道有BUG？实际上，每种颜色的花朵只能被相同颜色的光照亮。其他颜色的光通过花朵会导致其无法被照亮。'
-Des[2] = '为什么没有和花朵颜色相同的光线？原来多束单色光可以合成复色光，照亮复色花朵。黄=红+绿，青=绿+蓝，紫=红+蓝。你学会了吗？';
-Des[3] = '分光镜：对于特定角度的入射光线，既可以让其通过，又可以像直角镜一样反射光线，因此能将光线一分为二。';
-Des[4] = '只有三面镜子，怎么感觉不太够用呢？';
-Des[5] = '自从引入了分光镜，有没有感觉关卡的难度一下子增加了？想通过这一关，要充分发挥分光镜的作用哦。';
-Des[6] = '斜角镜：对于特定角度的入射光线，可以使其发生45度或者135度的偏转。\n        从外观上看，斜角镜比直角镜多了个小把手，有没有感觉到它更好用呢？';
-Des[7] = '只有三面镜子，真的能点亮这么多的花朵吗？再仔细看看，这些花朵的位置是不是很有规律呢？';
-Des[8] = '光栅：只能让和光栅角度相同的入射光线通过，会阻挡其他角度的入射光线。\n        光栅不能移动和旋转，注意别和分光镜混淆了哦。';
-Des[9] = '哇！头一次见到这么多镜子。不过怎么感觉还是不太够用呢？注意直角镜只有一面，要把它用在合适的地方。\n        障碍物：能阻止所有方向的光线通过。';
-Des[10] = '“只有一面斜角镜，怎么可能让两束光都发生45度的偏转，你这关保过吗？”\n        “我出关的，能让关过不去？要是过不去，我自己吃了它，满意了吧？”';
-Des[11] = '是不是感觉这一关似曾相识？如果没有思路的话，建议复习一下第6关。';
-Des[12] = '是不是感觉没有头绪？不要怕，你经历了那么多关卡的磨练，这一关一定难不倒你。';
-Des[13] = '白光是三色光的总合。那么很显然，当白花被照亮时，其他任何颜色的光通过都不会影响到它。';
-Des[14] = '滤光镜：顾名思义，能过滤光的镜子。对于垂直入射的光线，只有与滤光镜颜色相同的光分量才能通过滤光镜，其他颜色的光分量会被其阻挡。';
-Des[15] = '这些花朵的排列是不是很令人恼火？冷静冷静，玩游戏也要有耐心。';
-Des[16] = '三种颜色的花团，都等着你来点亮。';
-Des[17] = '三棱镜：对于与三棱镜长边夹角22.5度的入射光线，经过三棱镜后发生的角度偏折与其颜色有关。红光直线通过，绿光偏转45度，蓝光偏转90度。因此一束白光会被三棱镜分出三束单色光，你学会了吗？';
-Des[18] = '身经百战的有没有被这一关难倒呢？有时候正向思考遇到困境时，不妨试着从逆向思考，说不定就会有新灵感。';
-Des[19] = '目标花朵都在对方的身下，这要怎样才能让光线对号入座呢？三棱镜在这一关中到底应该起到什么作用？';
-Des[20] = '白花深处幽径，要怎样才能点亮它呢？要注意红光不会被三棱镜改变方向，这一点有没有给你一些启发？';
-Des[21] = '有没有觉得难度陡升？仔细观察花朵的排列，其实这一关也没有那么难。';
-Des[22] = '三束单色光，要在如此狭窄的地方照亮四朵白花，这河里吗？';
-Des[23] = '倒数第二关了，加把劲！这关不难，相信你很快就能领会标题的含义了。';
-Des[24] = '难度最大的压轴关卡，最后一关，坚持就是胜利！';
-Des[25] = '变色镜：可以改变入射光线的颜色。当光线从红端进入时，变色规律是：红→绿，绿→蓝，蓝→红；反之，当光线从蓝端进入时，变色规律是：蓝→绿，绿→红，红→蓝。';
-Des[26] = '有了变色镜，关卡的颜色变得更加丰富多彩了。现在只需要一束单色光，就可以照亮各种颜色的花朵。';
-Des[27] = '如此茂密的光栅丛林，看起来是不是很吓人？不要慌，仔细观察，其实光路的秘密就隐藏在其中。';
-Des[28] = '只有一束单色光和一个变色镜，要怎么才能照亮四朵复色花朵？破解本关的秘诀在于分光镜，有了它，一切皆有可能。';
-Des[29] = '29关的升级版，如果你弄明白了上一关的思路，那么这一关一定也难不倒你。';
-Des[30] = '传送门：当光线进入传送门之后，如果光路方向上还有其它传送门，那么光线将被转移到下一个传送门。如果光路方向上没有其它传送门，那么光线将就此消失。\n        传送门的位置固定，不可以移动或旋转。注意区分传送门和白色花朵哦。';
-Des[31] = '3×3传送门阵列，让光路变得变幻莫测。';
-Des[32] = '黑色花朵：黑色花朵只能在黑暗中生长，任何颜色的光线照射都会使它枯萎凋谢。';
-Des[33] = '三朵蓝花就藏在那里。你能越过重重阻碍，捕捉到它们吗？';
-Des[34] = '在黑色花朵的包围之下，照亮青色花朵的光路只有一条。';
-Des[35] = '难度相当大的一关。提示一下，这一关最终的图案就像是一块晶石，小巧而又精致。';
-Des[36] = '移动传送门：顾名思义，就是可以移动的传送门。为了和普通传送门做区分，移动传送门的中心区域被做成了一个空心圆，而普通传送门的中心区域是米字格。';
-Des[37] = '六扇传送门，周游九宫格。要注意传送门的数量有限，一定要物尽其用哦。';
-Des[38] = '整个反射镜系列当中最绚丽多彩的一关。把传送门当作棋子，有没有感觉自己像是在下一盘大棋？';
-Des[39] = '颜色丰富，结构对称，多漂亮的花环！你想看到它被全部点亮后的样子吗？';
-Des[40] = '又是如此对称的一关。只是地方太小，有点伸展不开。提示一下，在这一关当中要注意斜角镜的重复使用哦。';
-Des[41] = '一光三花四镜，看似简简单单，实则暗藏玄机。';
-Des[42] = '完全中心对称的场景，但是却没办法用 中心对称的镜子摆法来解决。如果你喜欢40关或41关这种解法优美的关卡，那么这一关可能会让你感觉很难受。';
-Des[43] = '四种颜色的光线在狭窄的空间里交错，四国军棋？';
-Des[44] = '简单又优美的一关，当作中场休息了。';
-Des[45] = '有时候这种绕来绕去的关卡很麻烦，费老大劲，却总是只差那么一点点。';
-Des[46] = '为什么总是只差那么一点点？想想看，到底从哪里还能节省出一面镜子呢？';
-Des[47] = '把传送门传送的光看成在布的背面，做这关真的像在穿针引线，编中国结。\n        什么，中国结里没有绿线？不要在意这些细节啦...';
-Des[48] = '倒数第二关了，换个口味，来一个三棱镜谜题。';
-Des[49] = '玩变色镜还是摆脱不了绕线啊。加油，就快要完成了！';
-Des[50] = '量子镜：当光线从量子镜的入口进入量子镜后，会从量子镜的两个出口射出两束方向相反的光线。这两束光线具有量子纠缠效应：当其中一束光线传播一段距离经过变色镜发生颜色改变之后，另一束光同样会在传播相同距离后改变颜色，且两束光的变色规律正好相反。';
-Des[51] = '关于量子镜，还需注意以下两点：\n        1. 光线传播的距离是按照光线所经过的方格数来计算的，而不是几何距离；\n        2. 当一束量子光经过多个变色镜发生多次颜色变化时，因为量子纠缠效应，另一束光也会相应地多次改变颜色。';
-Des[52] = '对于含有量子镜的关卡，通常需要考虑光线传播的距离。相信等你通过这一关之后，就能明白标题的意思了。';
-Des[53] = '上一关的加强版，同样需要控制光线传播的距离。如果没有思路的话，注意观察两边花朵颜色排列之间的关系，相信其中的规律还是不难看出来的。';
-Des[54] = '思路如此清晰的一关，为什么到最后总是有点不对劲？其实只需要做一点小小的改变，问题就能迎刃而解。如果你还是没有想明白的话，不妨再多做一些尝试，毕竟可能的解法并不多。';
-Des[55] = '量子镜和三棱镜的第一次合作。对于这种关卡，把白光分开成三色光分别去看，可能会更有利于思考。';
-Des[56] = '量子光在经过传送门之后，仍然保持着量子纠缠效应。需要注意的是：光线在两个传送门之间跨越的距离，不被算在光线的传播距离之内。';
-Des[57] = '还是量子镜加传送门。过关的关键仍然是把握光线的传播距离。根据上一关的介绍容易知道，传送门可以缩短量子光的传播距离。你是不是明白了呢？';
-Des[58] = '花朵分布比较零散的一关，让人很难一眼看出光路的走向。传送门在这一关里又有什么作用呢？';
-Des[59] = '这一关居然有这么多量子镜，一定会很难吧。实际上这一关并不难。这里需要注意的是：当一束量子光进入另外一个量子镜之后，量子纠缠效应随即消失。也就是说，量子纠缠作用不会在多个量子镜之间传递下去。';
-Des[60] = '非常有意思的一关，考验你对量子镜的理解程度了。这一关的解法是多样的，其中一种解法甚至能节省出3个变色镜。要不要尝试一下呢？';
-Des[61] = '旋转镜：对于从任意角度入射的光线，都能使其逆时针转动90度。旋转镜的位置和方向都是固定的，不可以移动和旋转。';
-Des[62] = '还记不记得第8关一气化三“青”呢？在这一关里，你需要尝试一气化四“青”了。';
-Des[63] = '难度稍稍加大了。要想用一束光线就照亮这个黄色花朵组成的方阵，就需要尽可能地发挥旋转镜的作用。';
-Des[64] = '旋转镜与传送门的结合，看起来就很漂亮的一关。要注意避让外圈的黑色花朵哦。';
-Des[65] = '又回到了熟悉的量子镜关卡。从这一关开始，关卡的难度要整体上升一个台阶了。准备好了吗？面对疾风吧！';
-Des[66] = '这一关的标题还是很有信息量的。不知道你能不能看出其中的玄机呢？';
-Des[67] = '这一关看起来人畜无害，然而它的解法却不同寻常。当你用常规方法发现只剩一朵花没被点亮的时候，很遗憾地告诉你，真相可能离你还很遥远。不过也不要灰心，毕竟这一关的镜子数量不多。多尝试不同的思路，也许你就能成功过关。';
-Des[68] = '又是两束白光加三棱镜的组合。如果你对前面的关卡比较熟悉的话，相信你的脑海里应该有大致的思路了。';
-Des[69] = '这一关是量子镜和滤光镜的组合，和前面几关相比难度适中，来试试看吧。';
-Des[70] = '一束单色光要照亮这么多复色花朵，乍一看感觉不可思议。再看一看这一关的标题，你有没有想明白了点什么？';
-Des[71] = '量子镜和旋转镜也是可以合作的，而且能够设计出精美的图案。这种颜色和结构都很对称的关卡一般思路都比较清晰，加油吧。';
-Des[72] = '这是一个非常有趣的关卡，也是我们为数不多的原创关卡之一。这一关的思路其实很清晰，光栅的阻挡使得光线的颜色变化必须依靠量子纠缠效应。问题是，怎样让两束量子光在变色前走过相同的距离呢？想明白了这一点，这一关也就迎刃而解了。';
-Des[73] = '倒数第二关了，还是量子镜加三棱镜的组合。对于这种关卡，量子镜和三棱镜的摆放位置往往至关重要。问题是如何找准这两个镜子的合理位置呢？这就需要你对花朵整体的颜色和位置之间的关系有足够的敏感性以及一定的推理能力。思维是可以锻炼的，相信你可以！';
-Des[74] = '以量子镜和旋转镜的组合作为这一版本的压轴关卡，有足够的难度保证。这些看似零散分布的花朵，你能找到它们之间的隐藏的联系吗？';
-Des[75] = 'NULL.';
-Des[76] = 'NULL.';
-Des[77] = 'NULL.';
-Des[78] = 'NULL.';
-Des[79] = 'NULL.';
-
-Suc[0] = '是不是觉得太简单了？（滑稽）';
-Suc[1] = '原来只需要让蓝光绕过红花就可以了。';
-Suc[2] = '看来你已经完全学会了。';
-Suc[3] = '看来难度二星的关卡也就不过如此嘛！';
-Suc[4] = '分光镜不但能分光，还能合光。';
-Suc[5] = '相信你对分光镜的理解又加深了一层。';
-Suc[6] = 'So easy.';
-Suc[7] = '等等，先别着急去下一关，想想看。这一关的光路你真的看懂了吗？';
-Suc[8] = '怎么样，是不是费了一番劲呢？如果你独立完成了前九关，那你真的很棒棒啦，有没有被自己的聪明才智折服呢？';
-Suc[9] = '看来在狭小的地方，直角镜还是不能被两面斜角镜替代的。';
-Suc[10] = '原来一面斜角镜还可以被重复使用。记住这一点，以后会经常用到的哦。';
-Suc[11] = '如此对称的图案，是不是还想再多看一眼？怎么样，有没有感受到这款游戏的魅力？';
-Suc[12] = '哈哈哈，是不是想说：就这？';
-Suc[13] = '这关的解法不止一种哦。';
-Suc[14] = '原来白花不止能被白光照亮，红绿蓝三束单色光的叠加也能照亮它。有没有感觉这一关设计精妙呢？';
-Suc[15] = '这一关中的斜角镜同样需要重复使用哦。';
-Suc[16] = '透过分光镜的光线经过直角镜原路反射回去之后，还能再被分出一束光，这个规律你是不是早就发现了呢？';
-Suc[17] = '有了三棱镜，又可以解锁很多新玩法了，有没有很期待呢？';
-Suc[18] = '怎么样，逆向思考有没有帮助到你解谜呢？';
-Suc[19] = '先合光，再分光，是不是很巧妙呢？根据光路的可逆性，你找到三棱镜合光的规律了吗？';
-Suc[20] = '看来你已经完全掌握用三棱镜合成复色光了。';
-Suc[21] = '原来除了斜角镜，三棱镜也一样可以被重复使用。';
-Suc[22] = '你真是个小天才！';
-Suc[23] = '就要到最后一关的决战了，你做好准备了吗？';
-Suc[24] = '你真是太厉害了！这时候再回头看看之前的关卡，有没有一览众山小的感觉？能玩通这一关的你对这款小游戏一定是真爱了，有没有感觉意犹未尽呢？稍后将推出反射镜2.0版本，将包含全新的镜子和更多精心设计的关卡，敬请期待吧！';
-Suc[25] = '简单的教学关卡，不解释。';
-Suc[26] = '满天繁星都被你点亮。';
-Suc[27] = '光栅虽然限制了光路方向，但同时也缩减了搜索空间的大小。';
-Suc[28] = '是不是感觉稀里糊涂地就过关了？如果感觉没太明白的话，不如再仔细思考思考，这对破解后面的关卡有帮助哦。';
-Suc[29] = '两个三棱镜搭起了绿光的桥梁。';
-Suc[30] = '有了传送门，纵使千般阻隔，也能够瞬间跨越。';
-Suc[31] = '又是普普通通的一关，下面让我们再来点不一样的。';
-Suc[32] = '把黑色花朵理解成不能被光线照射的障碍物就可以了。那三个没有被用到的光栅有没有误导你呢？';
-Suc[33] = '是不是第一次感受到直角镜还有比分光镜更好用的时候呢？';
-Suc[34] = '想不到只需要一个三棱镜就能先分光，再合光。是不是很巧妙呢？';
-Suc[35] = '你真是个小天才！';
-Suc[36] = '简单的一关。怎么样，这一关的图案是不是像块夹心饼干？';
-Suc[37] = '小小地鼓励一下！';
-Suc[38] = '这一关真的很漂亮，就是可能对眼睛有些不太友好。';
-Suc[39] = '其实这一关和29关是一个套路，看懂以后就很简单了。';
-Suc[40] = '过关后的光路图案是不是很像一个风车？';
-Suc[41] = '这一关的思路也太巧妙了吧，你是花了多长时间才想到的呢？';
-Suc[42] = '什么都不说了，佩服！';
-Suc[43] = '相信你已经总结出了规律，对于这种空间狭小的关卡，斜角镜经常是要被重复使用的。';
-Suc[44] = '原来用分光镜和变色镜能玩出这么多的花样。还剩最后五关，准备好迎接挑战了吗？';
-Suc[45] = '对于这种没有明显规律可循的关卡，就要反复尝试，不断优化。相信过关以后的成就感还是非常强的，把镜子节约到极限也有一种美感。';
-Suc[46] = '不知道你有没有走弯路呢？';
-Suc[47] = '这一关有没有把你绕晕呢？';
-Suc[48] = '这关相对与绕线的关来说还是不太难。主要是看到白色青色和三棱镜就知道了思路，有迹可循。';
-Suc[49] = '反射镜系列到此结束了吗？不，还没有，废话不多说，敬请期待吧！';
-Suc[50] = '要注意量子镜是不满足光路的可逆性的。当光线从量子镜的出口进入时，光路将就此终止。';
-Suc[51] = '教学关卡到此结束，接下来请接受量子镜的考验吧。';
-Suc[52] = '原来只需要让上面的量子光绕个路，或者把量子镜往下偏移一格就能解决距离的问题了。';
-Suc[53] = '千万不要有量子镜一定要放在中轴线上这种思维定势哦。';
-Suc[54] = '原来用直角镜把一束量子光原路反射回去之后，还能让它再经过一次变色镜，从而使另一束量子光再发生一次颜色的改变。不知道你是自己发现这个规律的呢，还是偶然间试出来的呢？';
-Suc[55] = '变色镜对白光的作用，在经过三棱镜的分光后显现了出来。这一关是不是很巧妙呢？';
-Suc[56] = '简单的一关，当作是温习一下传送门的特性了。';
-Suc[57] = '只要想明白两束量子光应该分别照亮哪些花朵，这一关就不难。';
-Suc[58] = '有没有看明白最下面一行的青色花朵是怎样被点亮的呢？原来把一束量子光原路反射回去之后，还可能得到复色光。';
-Suc[59] = '逻辑简单，思路清晰，不解释。';
-Suc[60] = '把白色量子光分成三束单色光后再分别变色，和56关的思路正好相反。或者只对绿光进行了操作，这样还能省下3个变色镜。你用的是哪种方法呢？';
-Suc[61] = '奇怪的镜子增加了。';
-Suc[62] = '要注意旋转镜也是不满足光路可逆性的。因此用分光镜让光线原路返回之后再经过旋转镜，就会得到新的光路，从而让一束光分成四束光。';
-Suc[63] = '到目前为止，黄色光源还是第一次出现，有没有感觉很好看呢？';
-Suc[64] = '这一关可能要稍微绕一绕，不过也不是太复杂。';
-Suc[65] = '这一关最难想到的是量子镜的摆放位置。如果你足够敏锐的话，会发现把白色花朵分解成红色和青色是合理的，因为红色与绿色蓝色形成三种单色，青色与青色花朵对应。这样的话，就容易反推出三棱镜和量子镜的摆放位置了。';
-Suc[66] = '有没有发现这一关里的白色花朵其实是变相地提示了你量子镜的位置？这一关最精妙的地方在于第一行的绿色花朵是被直角镜原路返回的光线照亮的，这就是标题叫回光返照的原因了。';
-Suc[67] = '这一关的神仙解法几乎把量子镜的特性运用到了极致。如果你独立完成了这一关，那你可真是太厉害了。';
-Suc[68] = '这一关相当于22关和56关的结合体了。在这一关里量子光和普通光经过三棱镜后混合在了一起，因此把它们分开分析可能更容易理解。';
-Suc[69] = '有没有发现从量子镜分出的两束光线分别照亮了所有的冷色花朵和暖色花朵？这就是这一关标题的由来了。';
-Suc[70] = '这一关的突破点在绿色花朵和白色花朵，同时标题也给了充分的暗示。你有没有想明白对接起来的两束量子光分别发生了怎样的颜色变化呢？';
-Suc[71] = '离终点越来越近了，稍微休整一下，还剩最后三关。最后三关的难度都很高，毕竟作为压轴关卡，没有难度怎么行呢？加油加油！';
-Suc[72] = '只有让内圈的量子光发生无限循环，才能达到外圈量子光的传播距离。最后在外圈量子光的末尾加上反色镜，就能破除内圈的无限循环，从而保证内外圈的距离相等。有没有被这一关的设计思路惊艳到？';
-Suc[73] = '想不到这一关还是被你成功破解了，一定很有成就感吧！现在就剩下最后一关了，再接再厉。';
-Suc[74] = '由衷地佩服能看到这段话的你。相信这第三版的25个关卡给你带来了足够的头脑风暴。反射镜系列依旧没有完结，还有最后25关正在等着你来挑战。在最后的25关中，还会有全新的镜子加入，以及更多的原创关卡，希望能给你带来足够的惊喜。敬请期待吧！';
-Suc[75] = '就这？';
-Suc[76] = '就这？';
-Suc[77] = '就这？';
-Suc[78] = '就这？';
-Suc[79] = '就这？';
+export let levelData: (LevelData | null)[] = [
+    ...Array.from({length:TotalBasicLevel}, (_, i) => basiclevelData[i]),
+    ...new Array(ExtraLevelStart - TotalBasicLevel).fill(null),
+    ...Array.from({length:TotalBasicLevel}, (_, i) => extralevelData[i]),
+    ...new Array(TotalLevelSize - ExtraLevelStart - TotalBasicLevel).fill(null),
+]

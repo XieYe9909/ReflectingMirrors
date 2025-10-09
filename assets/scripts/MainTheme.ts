@@ -1,6 +1,6 @@
 
-import { _decorator, Component, Node, Sprite, SpriteFrame, Color, Button, Label, sys, resources, director } from 'cc';
-import { CurrentTotalLevel, Level, Name, Diff, Des, Suc } from './LevelData';
+import { _decorator, Component, Node, Sprite, SpriteFrame, Color, Button, Label, sys, resources, director, Sorting } from 'cc';
+import { TotalBasicLevel, TotalExtraLevel, ExtraLevelStart, levelData } from './LevelData';
 import { CurrentLevel } from './FirstPage';
 import { LightPiece } from './LightPiece';
 import { LightSource, LightTravel } from './LightTravel';
@@ -10,6 +10,7 @@ import { MapInfo } from './MapInfo';
 import { Flower } from './Flower';
 import { MainThemeInterface } from './MainThemeInterface';
 import { generateLocate, showUserConfirm } from './Utils';
+import { LevelSelect } from './LevelSelect';
 const { ccclass } = _decorator;
 
 function Char2Num(str: string): number {
@@ -150,7 +151,9 @@ export class MainTheme extends Component implements MainThemeInterface {
     LP_array = new Array<Node>();
     LS_array = new Array<LightSource>();
     children_num: number;
-    tot_level_num: number;  // 总关卡数
+    basic_level_num: number;
+    extra_level_num: number;
+    extra_level_start: number;
 
     customized_level: boolean;  // 是否为自定义关卡
 
@@ -159,13 +162,15 @@ export class MainTheme extends Component implements MainThemeInterface {
         this.initLightPiece();
 
         this.level_index = CurrentLevel[0] - 1;
-        this.level_name = Name[this.level_index];
-        this.level_code = Level[this.level_index];
-        this.level_difficulty = Diff[this.level_index];
-        this.describe_str = Des[this.level_index];
-        this.success_str = Suc[this.level_index];
+        this.level_name = levelData[this.level_index].name;
+        this.level_code = levelData[this.level_index].code;
+        this.level_difficulty = levelData[this.level_index].diff;
+        this.describe_str = levelData[this.level_index].des;
+        this.success_str = levelData[this.level_index].suc;
         this.customized_level = false;
-        this.tot_level_num = CurrentTotalLevel;
+        this.basic_level_num = TotalBasicLevel;
+        this.extra_level_num = TotalExtraLevel;
+        this.extra_level_start = ExtraLevelStart;
         this.level_flag = this.setLevel();
     }
 
@@ -499,7 +504,10 @@ export class MainTheme extends Component implements MainThemeInterface {
     setLevel() {
         let name = this.node.getChildByName('LevelName');
         let label = name.getComponent(Label);
-        if(this.level_name != null) label.string = (this.level_index + 1) + ' ' + this.level_name;
+        if(this.level_name != null) {
+            if (this.level_index >= ExtraLevelStart) label.string = 'Ex' + (this.level_index - ExtraLevelStart + 1) + ' ' + this.level_name;
+            else label.string = (this.level_index + 1) + ' ' + this.level_name;
+        }
         else label.string = String(this.level_index + 1);
 
         if(this.level_difficulty > 0) {
@@ -512,11 +520,11 @@ export class MainTheme extends Component implements MainThemeInterface {
         }
 
         let pre_level = this.node.getChildByName('PrevLevel').getComponent(Button);
-        if(this.level_index == 0) pre_level.interactable = false;
+        if(this.level_index == 0 || this.level_index == this.extra_level_start) pre_level.interactable = false;
         else pre_level.interactable = true;
 
         let next_level = this.node.getChildByName('NextLevel').getComponent(Button);
-        if(this.level_index == this.tot_level_num - 1) next_level.interactable = false;
+        if(this.level_index == this.basic_level_num - 1 || this.level_index == this.extra_level_num + this.extra_level_start - 1) next_level.interactable = false;
         else next_level.interactable = true;
 
         this.rotate_form = true;
@@ -616,11 +624,11 @@ export class MainTheme extends Component implements MainThemeInterface {
     prevLevel() {
         CurrentLevel[0]--;
         this.level_index--;
-        this.level_name = Name[this.level_index];
-        this.level_code = Level[this.level_index];
-        this.level_difficulty = Diff[this.level_index];
-        this.describe_str = Des[this.level_index];
-        this.success_str = Suc[this.level_index];
+        this.level_name = levelData[this.level_index].name;
+        this.level_code = levelData[this.level_index].code;
+        this.level_difficulty = levelData[this.level_index].diff;
+        this.describe_str = levelData[this.level_index].des;
+        this.success_str = levelData[this.level_index].suc;
 
         this.destroyLevel();
         this.level_flag = this.setLevel();
@@ -630,11 +638,11 @@ export class MainTheme extends Component implements MainThemeInterface {
     nextLevel() {
         CurrentLevel[0]++;
         this.level_index++;
-        this.level_name = Name[this.level_index];
-        this.level_code = Level[this.level_index];
-        this.level_difficulty = Diff[this.level_index];
-        this.describe_str = Des[this.level_index];
-        this.success_str = Suc[this.level_index];
+        this.level_name = levelData[this.level_index].name;
+        this.level_code = levelData[this.level_index].code;
+        this.level_difficulty = levelData[this.level_index].diff;
+        this.describe_str = levelData[this.level_index].des;
+        this.success_str = levelData[this.level_index].suc;
 
         this.destroyLevel();
         this.level_flag = this.setLevel();
@@ -673,10 +681,11 @@ export class MainTheme extends Component implements MainThemeInterface {
     }
 
     selectLevel() {
-        if(this.level_index < 25) director.loadScene('LevelSelect1');
-        else if(this.level_index < 50) director.loadScene('LevelSelect2');
-        else if(this.level_index < 75) director.loadScene('LevelSelect3');
-        else director.loadScene('LevelSelect4');
+        // if(this.level_index < 25) director.loadScene('LevelSelect1');
+        // else if(this.level_index < 50) director.loadScene('LevelSelect2');
+        // else if(this.level_index < 75) director.loadScene('LevelSelect3');
+        // else director.loadScene('LevelSelect4');
+        director.loadScene('NewLevelSelect');
     }
 
     setRotate() {
