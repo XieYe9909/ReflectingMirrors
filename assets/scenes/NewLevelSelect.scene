@@ -752,7 +752,7 @@
     },
     "component": "",
     "_componentId": "3ab3bnAGHpOjaJDGgo3BOUm",
-    "handler": "Select",
+    "handler": "select",
     "customEventData": ""
   },
   {
@@ -1093,7 +1093,7 @@
     },
     "component": "",
     "_componentId": "3ab3bnAGHpOjaJDGgo3BOUm",
-    "handler": "Select",
+    "handler": "select",
     "customEventData": ""
   },
   {
@@ -1434,7 +1434,7 @@
     },
     "component": "",
     "_componentId": "3ab3bnAGHpOjaJDGgo3BOUm",
-    "handler": "Select",
+    "handler": "select",
     "customEventData": ""
   },
   {
@@ -1775,7 +1775,7 @@
     },
     "component": "",
     "_componentId": "3ab3bnAGHpOjaJDGgo3BOUm",
-    "handler": "Select",
+    "handler": "select",
     "customEventData": ""
   },
   {
@@ -2116,7 +2116,7 @@
     },
     "component": "",
     "_componentId": "3ab3bnAGHpOjaJDGgo3BOUm",
-    "handler": "Select",
+    "handler": "select",
     "customEventData": ""
   },
   {
@@ -2457,7 +2457,7 @@
     },
     "component": "",
     "_componentId": "3ab3bnAGHpOjaJDGgo3BOUm",
-    "handler": "Select",
+    "handler": "select",
     "customEventData": ""
   },
   {
@@ -2798,7 +2798,7 @@
     },
     "component": "",
     "_componentId": "3ab3bnAGHpOjaJDGgo3BOUm",
-    "handler": "Select",
+    "handler": "select",
     "customEventData": ""
   },
   {
@@ -3139,7 +3139,7 @@
     },
     "component": "",
     "_componentId": "3ab3bnAGHpOjaJDGgo3BOUm",
-    "handler": "Select",
+    "handler": "select",
     "customEventData": ""
   },
   {
@@ -3480,7 +3480,7 @@
     },
     "component": "",
     "_componentId": "3ab3bnAGHpOjaJDGgo3BOUm",
-    "handler": "Select",
+    "handler": "select",
     "customEventData": ""
   },
   {
@@ -3821,7 +3821,7 @@
     },
     "component": "",
     "_componentId": "3ab3bnAGHpOjaJDGgo3BOUm",
-    "handler": "Select",
+    "handler": "select",
     "customEventData": ""
   },
   {
@@ -4162,7 +4162,7 @@
     },
     "component": "",
     "_componentId": "3ab3bnAGHpOjaJDGgo3BOUm",
-    "handler": "Select",
+    "handler": "select",
     "customEventData": ""
   },
   {
@@ -4503,7 +4503,7 @@
     },
     "component": "",
     "_componentId": "3ab3bnAGHpOjaJDGgo3BOUm",
-    "handler": "Select",
+    "handler": "select",
     "customEventData": ""
   },
   {
@@ -4844,7 +4844,7 @@
     },
     "component": "",
     "_componentId": "3ab3bnAGHpOjaJDGgo3BOUm",
-    "handler": "Select",
+    "handler": "select",
     "customEventData": ""
   },
   {
@@ -5185,7 +5185,7 @@
     },
     "component": "",
     "_componentId": "3ab3bnAGHpOjaJDGgo3BOUm",
-    "handler": "Select",
+    "handler": "select",
     "customEventData": ""
   },
   {
@@ -5526,7 +5526,7 @@
     },
     "component": "",
     "_componentId": "3ab3bnAGHpOjaJDGgo3BOUm",
-    "handler": "Select",
+    "handler": "select",
     "customEventData": ""
   },
   {
@@ -5867,7 +5867,7 @@
     },
     "component": "",
     "_componentId": "3ab3bnAGHpOjaJDGgo3BOUm",
-    "handler": "Select",
+    "handler": "select",
     "customEventData": ""
   },
   {
@@ -6208,7 +6208,7 @@
     },
     "component": "",
     "_componentId": "3ab3bnAGHpOjaJDGgo3BOUm",
-    "handler": "Select",
+    "handler": "select",
     "customEventData": ""
   },
   {
@@ -6549,7 +6549,7 @@
     },
     "component": "",
     "_componentId": "3ab3bnAGHpOjaJDGgo3BOUm",
-    "handler": "Select",
+    "handler": "select",
     "customEventData": ""
   },
   {
@@ -6890,7 +6890,7 @@
     },
     "component": "",
     "_componentId": "3ab3bnAGHpOjaJDGgo3BOUm",
-    "handler": "Select",
+    "handler": "select",
     "customEventData": ""
   },
   {
@@ -7231,7 +7231,7 @@
     },
     "component": "",
     "_componentId": "3ab3bnAGHpOjaJDGgo3BOUm",
-    "handler": "Select",
+    "handler": "select",
     "customEventData": ""
   },
   {
@@ -7569,7 +7569,7 @@
     },
     "component": "",
     "_componentId": "19233rfmx5KhaMokXLxncVv",
-    "handler": "PageDown",
+    "handler": "pageDown",
     "customEventData": ""
   },
   {
@@ -7895,7 +7895,7 @@
     },
     "component": "",
     "_componentId": "19233rfmx5KhaMokXLxncVv",
-    "handler": "PageUp",
+    "handler": "pageUp",
     "customEventData": ""
   },
   {

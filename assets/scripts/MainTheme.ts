@@ -1,6 +1,6 @@
 
 import { _decorator, Component, Node, Sprite, SpriteFrame, Color, Button, Label, sys, resources, director, Sorting } from 'cc';
-import { TotalBasicLevel, TotalExtraLevel, ExtraLevelStart, levelData } from './LevelData';
+import { TotalBasicLevel, TotalExtraLevel, ExtraLevelStart, TotalLevelData } from './LevelData';
 import { CurrentLevel } from './FirstPage';
 import { LightPiece } from './LightPiece';
 import { LightSource, LightTravel } from './LightTravel';
@@ -162,11 +162,11 @@ export class MainTheme extends Component implements MainThemeInterface {
         this.initLightPiece();
 
         this.level_index = CurrentLevel[0];
-        this.level_name = levelData[this.level_index].name;
-        this.level_code = levelData[this.level_index].code;
-        this.level_difficulty = levelData[this.level_index].diff;
-        this.describe_str = levelData[this.level_index].des;
-        this.success_str = levelData[this.level_index].suc;
+        this.level_name = TotalLevelData[this.level_index].name;
+        this.level_code = TotalLevelData[this.level_index].code;
+        this.level_difficulty = TotalLevelData[this.level_index].diff;
+        this.describe_str = TotalLevelData[this.level_index].des;
+        this.success_str = TotalLevelData[this.level_index].suc;
         this.customized_level = false;
         this.basic_level_num = TotalBasicLevel;
         this.extra_level_num = TotalExtraLevel;
@@ -624,11 +624,11 @@ export class MainTheme extends Component implements MainThemeInterface {
     prevLevel() {
         CurrentLevel[0]--;
         this.level_index--;
-        this.level_name = levelData[this.level_index].name;
-        this.level_code = levelData[this.level_index].code;
-        this.level_difficulty = levelData[this.level_index].diff;
-        this.describe_str = levelData[this.level_index].des;
-        this.success_str = levelData[this.level_index].suc;
+        this.level_name = TotalLevelData[this.level_index].name;
+        this.level_code = TotalLevelData[this.level_index].code;
+        this.level_difficulty = TotalLevelData[this.level_index].diff;
+        this.describe_str = TotalLevelData[this.level_index].des;
+        this.success_str = TotalLevelData[this.level_index].suc;
 
         this.destroyLevel();
         this.level_flag = this.setLevel();
@@ -638,11 +638,11 @@ export class MainTheme extends Component implements MainThemeInterface {
     nextLevel() {
         CurrentLevel[0]++;
         this.level_index++;
-        this.level_name = levelData[this.level_index].name;
-        this.level_code = levelData[this.level_index].code;
-        this.level_difficulty = levelData[this.level_index].diff;
-        this.describe_str = levelData[this.level_index].des;
-        this.success_str = levelData[this.level_index].suc;
+        this.level_name = TotalLevelData[this.level_index].name;
+        this.level_code = TotalLevelData[this.level_index].code;
+        this.level_difficulty = TotalLevelData[this.level_index].diff;
+        this.describe_str = TotalLevelData[this.level_index].des;
+        this.success_str = TotalLevelData[this.level_index].suc;
 
         this.destroyLevel();
         this.level_flag = this.setLevel();

@@ -1,5 +1,5 @@
 import { _decorator, Component, Button, Label } from 'cc';
-import { TotalBasicLevel, TotalExtraLevel, ExtraLevelStart } from './LevelData';
+import { TotalBasicLevel, TotalExtraLevel, ExtraLevelStart, BasicLevelPerPage, ExtraLevelPerPage } from './LevelData';
 import { LevelSelectButton } from './LevelSelectButton';
 import { CurrentLevel } from './FirstPage'
 const { ccclass } = _decorator;
@@ -10,12 +10,17 @@ export class LevelSelect extends Component {
     max_page: number;
 
     onLoad() {
-        this.page = Math.floor(((CurrentLevel[0] >= ExtraLevelStart) ? (CurrentLevel[0] - ExtraLevelStart) : CurrentLevel[0]) / 10);
-        this.max_page = Math.ceil(((TotalBasicLevel > TotalExtraLevel) ? TotalBasicLevel : TotalExtraLevel) / 10);
-        this.UpdatePage();
+        if (CurrentLevel[0] >= ExtraLevelStart) {
+            this.page = Math.floor((CurrentLevel[0] - ExtraLevelStart) / ExtraLevelPerPage);
+            this.max_page = Math.ceil(TotalExtraLevel / ExtraLevelPerPage);
+        } else {
+            this.page = Math.floor(CurrentLevel[0] / BasicLevelPerPage);
+            this.max_page = Math.ceil(TotalBasicLevel / BasicLevelPerPage);
+        }
+        this.updatePage();
     }
 
-    UpdatePage() {
+    updatePage() {
         // let label = this.node.getChildByName('CurrentPage').getComponent(Label);
         // label.string = String(this.page + 1);
 
@@ -23,7 +28,7 @@ export class LevelSelect extends Component {
         for (var i=0; i<levels.length; i++) {
             let button = levels[i].getComponent('LevelSelectButton') as (LevelSelectButton | null);
             if (button == null) continue;
-            button.Update();
+            button.onLoad();
         }
 
         let prevPage = this.node.getChildByName('PrevPage').getComponent(Button);
@@ -37,13 +42,13 @@ export class LevelSelect extends Component {
         pageIndex.string = (this.page + 1) + ' / ' + this.max_page;
     }
 
-    PageUp() {
+    pageUp() {
         this.page++;
-        this.UpdatePage();
+        this.updatePage();
     }
 
-    PageDown() {
+    pageDown() {
         this.page--;
-        this.UpdatePage();
+        this.updatePage();
     }
 }

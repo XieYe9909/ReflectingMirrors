@@ -1,5 +1,7 @@
 export let TotalLevelSize = 1000;
 export let ExtraLevelStart = 500;
+export let BasicLevelPerPage = 10;
+export let ExtraLevelPerPage = 10;
 
 class LevelData {
     name: string;
@@ -16,7 +18,7 @@ class LevelData {
     }
 }
 
-let basiclevelData: LevelData[] = [
+let basic_level_data: LevelData[] = [
     // 关卡1~5
     new LevelData('开始', 1, 'E0m0M7sQ11',
         '游戏方法：拖动棋盘下方的直角镜到光路上，点击镜子使其旋转，让光线照亮花朵。\n        直角镜：对于特定角度的入射光线，可以使其原路返回或者发生90度的偏转。要注意直角镜只有一个面能反射光线哦。', 
@@ -273,7 +275,7 @@ let basiclevelData: LevelData[] = [
         '由衷地佩服能看到这段话的你。相信这第三版的25个关卡给你带来了足够的头脑风暴。反射镜系列依旧没有完结，还有最后25关正在等着你来挑战。在最后的25关中，还会有全新的镜子加入，以及更多的原创关卡，希望能给你带来足够的惊喜。敬请期待吧！') 
 ];
 
-let extralevelData: LevelData[] = [
+let extra_level_data: LevelData[] = [
     // 关卡1~5
     new LevelData('多彩', 2, 'H7t6JbsKbgM3gN3sbkO3kP3oQ1392b1f1h1',
         '广告位招租', 
@@ -394,12 +396,12 @@ let extralevelData: LevelData[] = [
         '过关！')
 ];
 
-export let TotalBasicLevel = basiclevelData.length;
-export let TotalExtraLevel = extralevelData.length;
+export let TotalBasicLevel = basic_level_data.length;
+export let TotalExtraLevel = extra_level_data.length;
 
-export let levelData: (LevelData | null)[] = [
-    ...Array.from({length:TotalBasicLevel}, (_, i) => basiclevelData[i]),
+export let TotalLevelData: (LevelData | null)[] = [
+    ...Array.from({length:TotalBasicLevel}, (_, i) => basic_level_data[i]),
     ...new Array(ExtraLevelStart - TotalBasicLevel).fill(null),
-    ...Array.from({length:TotalBasicLevel}, (_, i) => extralevelData[i]),
-    ...new Array(TotalLevelSize - ExtraLevelStart - TotalBasicLevel).fill(null),
+    ...Array.from({length:TotalExtraLevel}, (_, i) => extra_level_data[i]),
+    ...new Array(TotalLevelSize - ExtraLevelStart - TotalExtraLevel).fill(null),
 ]
