@@ -12,11 +12,10 @@ export class LevelSelect extends Component {
     onLoad() {
         if (CurrentLevel[0] >= ExtraLevelStart) {
             this.page = Math.floor((CurrentLevel[0] - ExtraLevelStart) / ExtraLevelPerPage);
-            this.max_page = Math.ceil(TotalExtraLevel / ExtraLevelPerPage);
         } else {
             this.page = Math.floor(CurrentLevel[0] / BasicLevelPerPage);
-            this.max_page = Math.ceil(TotalBasicLevel / BasicLevelPerPage);
         }
+        this.max_page = Math.max(Math.ceil(TotalBasicLevel / BasicLevelPerPage), Math.ceil(TotalExtraLevel / ExtraLevelPerPage));
         this.updatePage();
     }
 

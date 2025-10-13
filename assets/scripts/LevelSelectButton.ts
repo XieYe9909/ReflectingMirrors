@@ -18,7 +18,7 @@ export class LevelSelectButton extends Component {
         let DisplayedIndex = (this.index >= ExtraLevelStart) ? (this.index - ExtraLevelStart + 1) : (this.index + 1);
         label.string = (this.index >= ExtraLevelStart) ? 'Ex' + String(DisplayedIndex) : String(DisplayedIndex);
 
-        this.getComponent(Button).interactable = ((this.index >= 0 && this.index < TotalBasicLevel) || (this.index >= ExtraLevelStart && this.index < ExtraLevelStart + TotalExtraLevel));
+        this.node.active = ((this.index >= 0 && this.index < TotalBasicLevel) || (this.index >= ExtraLevelStart && this.index < ExtraLevelStart + TotalExtraLevel));
         
         let LevelState: boolean[] = JSON.parse(sys.localStorage.getItem('LevelState'));
         let sprite = this.node.getComponent(Sprite);
