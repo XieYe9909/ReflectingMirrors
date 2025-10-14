@@ -1,38 +1,53 @@
-
-import { _decorator, Component, director, sys, Sprite, Color, Label } from 'cc';
-import { CurrentLevel } from './FirstPage';
+import { _decorator, Component, Button, Label } from 'cc';
+import { TotalBasicLevel, TotalExtraLevel, ExtraLevelStart, BasicLevelPerPage, ExtraLevelPerPage } from './LevelData';
+import { LevelSelectButton } from './LevelSelectButton';
+import { CurrentLevel } from './FirstPage'
 const { ccclass } = _decorator;
 
 @ccclass('LevelSelect')
 export class LevelSelect extends Component {
-    index: number;
+    page: number;
+    max_page: number;
 
     onLoad() {
-        this.index = this.GetLevelIndex();
-        
-        let label = this.node.getChildByName('Label').getComponent(Label);
-        label.string = String(this.index + 1);
-
-        let LevelState: boolean[] = JSON.parse(sys.localStorage.getItem('LevelState'));
-        let sprite = this.node.getComponent(Sprite);
-
-        if(LevelState[this.index]) {
-            sprite.color = new Color(100, 200, 0, 255);
+        if (CurrentLevel[0] >= ExtraLevelStart) {
+            this.page = Math.floor((CurrentLevel[0] - ExtraLevelStart) / ExtraLevelPerPage);
+        } else {
+            this.page = Math.floor(CurrentLevel[0] / BasicLevelPerPage);
         }
-        else {
-            sprite.color = new Color(255, 255, 255, 255);
-        }
+        this.max_page = Math.max(Math.ceil(TotalBasicLevel / BasicLevelPerPage), Math.ceil(TotalExtraLevel / ExtraLevelPerPage));
+        this.updatePage();
     }
 
-    GetLevelIndex(): number {
-        let name = this.node.name;
-        let level_index = name.slice(5, name.length);
-        let index = Number(level_index);
-        return(index - 1);
+    updatePage() {
+        // let label = this.node.getChildByName('CurrentPage').getComponent(Label);
+        // label.string = String(this.page + 1);
+
+        let levels = this.node.children;
+        for (var i=0; i<levels.length; i++) {
+            let button = levels[i].getComponent('LevelSelectButton') as (LevelSelectButton | null);
+            if (button == null) continue;
+            button.onLoad();
+        }
+
+        let prevPage = this.node.getChildByName('PrevPage').getComponent(Button);
+        let nextPage = this.node.getChildByName('NextPage').getComponent(Button);
+        if (this.page <= 0) prevPage.interactable = false;
+        else prevPage.interactable = true;
+        if (this.page >= this.max_page - 1) nextPage.interactable = false;
+        else nextPage.interactable = true;
+
+        let pageIndex = this.node.getChildByName('PageIndex').getComponent(Label);
+        pageIndex.string = (this.page + 1) + ' / ' + this.max_page;
     }
 
-    Select() {
-        CurrentLevel[0] = this.index + 1;
-        director.loadScene('Level');
+    pageUp() {
+        this.page++;
+        this.updatePage();
+    }
+
+    pageDown() {
+        this.page--;
+        this.updatePage();
     }
 }

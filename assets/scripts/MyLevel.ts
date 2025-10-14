@@ -35,7 +35,9 @@ export class MyLevel extends MainTheme {
         this.describe_str = '';
         this.success_str = '';
         this.customized_level = true;
-        this.tot_level_num = level_info_array.length;
+        this.basic_level_num = level_info_array.length;
+        this.extra_level_num = 0;
+        this.extra_level_start = -1;
         this.level_flag = this.setLevel();
     }
 

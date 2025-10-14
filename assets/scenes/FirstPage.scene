@@ -767,7 +767,7 @@
     "component": "",
     "_componentId": "3ff96inR3FE8I5MMOZKfiL8",
     "handler": "buttoncallback",
-    "customEventData": "LevelSelect1"
+    "customEventData": "NewLevelSelect"
   },
   {
     "__type__": "cc.Node",
