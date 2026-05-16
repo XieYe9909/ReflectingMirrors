@@ -2,9 +2,7 @@
 import { _decorator, Node, EventTouch, Component, sys } from 'cc';
 import { MapInfo } from './MapInfo';
 import { matrix1, matrix2 } from './Square';
-// import { MainTheme } from './MainTheme';
-// import { getIndexByID } from './utils';
-import { MainThemeInterface } from './MainThemeInterface';
+import { MainTheme } from './MainTheme';
 const { ccclass } = _decorator;
 
 export class MirrorState {
@@ -32,27 +30,15 @@ export class Mirror extends Component {
     squarex: number;
     squarey: number;
     isClick = true;
-    main_theme: MainThemeInterface;
+    main_theme: MainTheme;
 
     onLoad() {
-        let main_theme = this.node.parent.getComponent("MainTheme");
-        this.main_theme = main_theme;
+        this.main_theme = this.node.parent.getComponent(MainTheme);
     }
 
     start () {
         this.node.on(Node.EventType.TOUCH_START, this.touchStart, this);
     }
-
-    /**
-     * Instead by getIndexByID
-     */
-    // GetMirrorIndex(): number {
-    //     let mirror_num = this.main_theme.mirror_array.length;
-    //     for(let i=0; i<mirror_num; i++) {
-    //         if(!this.node.uuid.localeCompare(this.main_theme.mirror_array[i].uuid)) return i;
-    //     }
-    //     return null;
-    // }
 
     SetMirror(mirror_state:MirrorState) {
         this.dir = mirror_state.dir

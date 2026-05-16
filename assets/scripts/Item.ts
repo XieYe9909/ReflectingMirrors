@@ -1,5 +1,6 @@
 import { _decorator, Component, EventTouch, Node } from 'cc';
-import { MakeLevelInterface } from './MakeLevelInterface';
+// import { MakeLevelInterface } from './MakeLevelInterface';
+import { MakeLevel } from './MakeLevel';
 import { Flower } from './Flower';
 import { Type } from './Prefab';
 import { matrix1 } from './Square';
@@ -14,12 +15,12 @@ export class Item extends Component {
     locate: number[];
     color: boolean[] = [false, false, false];
     rotatable: boolean;
-    make_level: MakeLevelInterface = null;
+    make_level: MakeLevel = null;
     type: Type = null;
     isClick: boolean = false;
 
     onLoad() {
-        this.make_level = this.node.parent.getComponent("MakeLevel");
+        this.make_level = this.node.parent.getComponent(MakeLevel);
     }
 
     start() {

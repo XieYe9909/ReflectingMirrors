@@ -7,12 +7,12 @@ import { Prefab } from './Prefab';
 import { Item } from './Item';
 import { LightSource, LightTravel } from './LightTravel';
 import { Flower } from './Flower';
-import { MakeLevelInterface, Mode } from './MakeLevelInterface';
 import { saveLevel } from './Storage';
 import { copy2Clipboard, showUserConfirm, showWechatInputName } from './Utils';
 const { ccclass, property } = _decorator;
 
 const MAX_MIRROR_NUM = 24;
+export type Mode = 'add' | 'delete' | 'none';
 
 function GenerateLocate(i: number): number[] {
     switch (Math.floor(i / 12)) {
@@ -25,7 +25,7 @@ function GenerateLocate(i: number): number[] {
 }
 
 @ccclass('MakeLevel')
-export class MakeLevel extends Component implements MakeLevelInterface {
+export class MakeLevel extends Component {
     prefab_array = new Array<Node>();
     frame_array = new Array<Node>();
     LP_array = new Array<Node>();
@@ -180,6 +180,10 @@ export class MakeLevel extends Component implements MakeLevelInterface {
         let y = event.getUILocation().y - MapInfo.UIheight / 2;
         x = Math.floor((x - MapInfo.xstart1()) / MapInfo.totalsize());
         y = Math.floor((y - MapInfo.ystart1()) / MapInfo.totalsize());
+
+        if (x < 0 || x >= 15 || y < 0 || y >= 15) {
+            return;
+        }
 
         if (matrix1[x * 15 + y].id != -1) {
             return;

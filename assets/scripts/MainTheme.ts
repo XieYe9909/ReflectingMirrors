@@ -8,7 +8,6 @@ import { ClearMatrix, matrix1, matrix2, GetColor } from './Square';
 import { MirrorState, Mirror } from './Mirror';
 import { MapInfo } from './MapInfo';
 import { Flower } from './Flower';
-import { MainThemeInterface } from './MainThemeInterface';
 import { generateLocate, showUserConfirm } from './Utils';
 const { ccclass } = _decorator;
 
@@ -133,7 +132,7 @@ export function Id2MirrorName(id: number) {
 }
 
 @ccclass('MainTheme')
-export class MainTheme extends Component implements MainThemeInterface {
+export class MainTheme extends Component {
     level_index: number;
     level_name: string;
     level_code: string;
